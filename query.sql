@@ -1,33 +1,46 @@
+--======<ADMIN USER QUERIES>==========
+
 --for view all bookings (ADMIN)
 SELECT * FROM booking;
---========================
+--=====================================
 
 --for edit bookings (ADMIN)
-CREATE OR REPLACE FUNCTION editBooking(
-    BID INT,
-    RID INT,
-    newUserID INT,
-    CiDate DATE,
-    BNumber INT,
-    Ptype VARCHAR(100)) 
-    
-    RETURNS BookingID
-    LANGUAGE plpgsql
-    $$
-    BEGIN
-        UPDATE booking
-        SET RoomID = RID,
-            UserID = newUserID,
-            checkInDate = CiDate,
-            bookingNumber = BNumber,
-            paytype = Ptype
-        WHERE booking.BookingID = BID AND
-              booking.RoomID = RID; 
+UPDATE booking
+SET RoomId = newRoomId,
+    checkInDate = newCheckInDate ,
+    NumberOfBooking = newNumberOfBooking
+    payType = newPayType
+WHERE booking.UserID = targetUserId AND booking.BookingId = targetBookingId;
+--=====================================
 
-    END;
-    &&
---========================
+--for delete bookings (ADMIN)
+DELETE * FROM booking
+WHERE BookingId=targetBookingId AND UserId=targetUserId AND RoomId=targetRoomId;
+
+--=====================================
+--=====================================
+
+
+
+
+--======<NORMAL USER QUERIES>==========
 
 --for view all bookings (normalUser)
 SELECT * FROM booking
-WHERE UserID = 
+WHERE UserId = myUserId;
+--=====================================
+
+--for edit bookings (normalUser)
+UPDATE booking
+SET RoomId = newRoomId,
+    checkInDate = newCheckInDate ,
+    NumberOfBooking = newNumberOfBooking
+    payType = newPayType
+WHERE booking.UserID = myUserId AND booking.RoomID = myRoomId;
+--=====================================
+
+--for delete bookings (normalUser)
+DELETE * FROM booking
+WHERE BookingId=myBookingId AND UserId=myUserId;
+--=====================================
+--=====================================
