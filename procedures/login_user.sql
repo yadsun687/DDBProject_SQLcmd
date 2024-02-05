@@ -24,7 +24,7 @@ BEGIN
         RAISE NOTICE 'User logged in with UserID: %', user_id;
 
         -- Call the create_login_log function after a successful login
-        PERFORM create_login_log(user_id, 'some_login_type', CURRENT_DATE);
+        PERFORM create_login_log(user_id, 'LOGIN', CURRENT_DATE);
 
     ELSE
         RAISE NOTICE 'Login failed. User not found or incorrect credentials.';
