@@ -25,5 +25,7 @@
    - [admin_view_bookings](functions\admin_view_bookings.sql)
 8. The system shall allow the admin to edit any hotel bookings.
    - [admin_edit_booking](procedures\admin_edit_booking.sql)
-9.  The system shall allow the admin to delete any hotel bookings
-    - [admin_delete_booking](procedures\admin_delete_booking.sql)
+9. The system shall allow the admin to delete any hotel bookings
+   - [admin_delete_booking](procedures\admin_delete_booking.sql)
+10. LOGIN LOG ** additional Logs requirement from TA Aussie
+    - [create_login_log](functions\create_login_log.sql)
