@@ -1,9 +1,12 @@
-CREATE OR REPLACE PROCEDURE login_user(
-    p_user_name VARCHAR(100),
-    p_user_password VARCHAR(100)
-)
-LANGUAGE plpgsql
-AS $$
+-- PROCEDURE: public.login_user(character varying, character varying)
+
+-- DROP PROCEDURE IF EXISTS public.login_user(character varying, character varying);
+
+CREATE OR REPLACE PROCEDURE public.login_user(
+	IN p_user_name character varying,
+	IN p_user_password character varying)
+LANGUAGE 'plpgsql'
+AS $BODY$
 DECLARE
     user_id INTEGER;
 BEGIN
@@ -19,8 +22,12 @@ BEGIN
         WHERE "UserID" = user_id;
 
         RAISE NOTICE 'User logged in with UserID: %', user_id;
+
+        -- Call the create_login_log function after a successful login
+        PERFORM create_login_log(user_id, 'some_login_type', CURRENT_DATE);
+
     ELSE
         RAISE NOTICE 'Login failed. User not found or incorrect credentials.';
     END IF;
 END;
-$$;
+$BODY$;

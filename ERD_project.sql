@@ -156,6 +156,15 @@ CREATE TABLE IF NOT EXISTS public."ROOM"
     CONSTRAINT "ROOM_pkey" PRIMARY KEY ("RoomID")
 );
 
+CREATE TABLE IF NOT EXISTS public."LoginLog"
+(
+    "LoginID" bigserial NOT NULL,
+    "Type" "LoginType" NOT NULL,
+    "Date-time" date NOT NULL,
+    "UserID" integer NOT NULL,
+    CONSTRAINT "LoginLog_Pkey" PRIMARY KEY ("LoginID")
+);
+
 ALTER TABLE IF EXISTS public."ADMIN"
     ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(ADMIN)")
     REFERENCES public."ALL_USER" ("UserID") MATCH SIMPLE
@@ -311,5 +320,12 @@ ALTER TABLE IF EXISTS public."ROOM"
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
+
+
+ALTER TABLE IF EXISTS public."LoginLog"
+    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID")
+    REFERENCES public."ALL_USER" ("UserID") MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
 
 END;
