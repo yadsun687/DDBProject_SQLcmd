@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION public.create_login_log(
 	user_id integer,
 	login_type "LoginType",
 	login_date_time date)
-    RETURNS boolean
+    RETURNS void
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
