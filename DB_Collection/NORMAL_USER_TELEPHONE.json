@@ -8,7 +8,8 @@
     "properties": {
         "NormalUser_telephone_id": {
             "bsonType": "int",
-            "description": "The ID of the normal user telephone"
+            "description": "The ID of the normal user telephone",
+            "unique": true
         },
         "UserID": {
             "bsonType": "int",

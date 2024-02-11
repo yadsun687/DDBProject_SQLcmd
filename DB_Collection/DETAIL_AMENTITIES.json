@@ -8,11 +8,15 @@
     "properties": {
         "DetailID": {
             "bsonType": "int",
-            "description": "The ID of the detail"
+            "description": "The ID of the detail",
+            "unique": true
+
         },
         "details_amentities_id": {
             "bsonType": "int",
-            "description": "The ID of the detail amenities"
+            "description": "The ID of the detail amenities",
+            "unique": true
+
         },
         "Amentities": {
             "bsonType": "string",

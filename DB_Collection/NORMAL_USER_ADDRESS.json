@@ -8,7 +8,8 @@
     "properties": {
         "Normaluser_address_id": {
             "bsonType": "int",
-            "description": "The ID of the normal user address"
+            "description": "The ID of the normal user address",
+            "unique": true
         },
         "UserID": {
             "bsonType": "int",

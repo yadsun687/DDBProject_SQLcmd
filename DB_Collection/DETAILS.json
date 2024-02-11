@@ -18,7 +18,8 @@
     "properties": {
         "DetailID": {
             "bsonType": "int",
-            "description": "The unique identifier for the room details"
+            "description": "The unique identifier for the room details",
+            "unique": true
         },
         "RoomDecor": {
             "bsonType": "string",

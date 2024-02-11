@@ -11,7 +11,8 @@
     "properties": {
         "BookingID": {
             "bsonType": "int",
-            "description": "The unique identifier for each booking"
+            "description": "The unique identifier for each booking",
+            "unique": true
         },
         "UserID": {
             "bsonType": "int",
