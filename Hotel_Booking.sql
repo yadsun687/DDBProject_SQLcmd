@@ -833,9 +833,9 @@ ALTER TABLE public.booking OWNER TO root;
 --
 
 CREATE TABLE public.branch_facilities (
+    branch_facility_id integer NOT NULL,
     branchid integer NOT NULL,
-    facility character varying(100) NOT NULL,
-    branch_facility_id integer NOT NULL
+    facility character varying(100) NOT NULL
 );
 
 
@@ -964,9 +964,9 @@ ALTER TABLE public.details OWNER TO root;
 --
 
 CREATE TABLE public.details_amentities (
+    details_amentities_id integer NOT NULL,
     detailsid integer NOT NULL,
-    amentities character varying(100) NOT NULL,
-    details_amentities_id integer NOT NULL
+    amentities character varying(100) NOT NULL
 );
 
 
@@ -1035,9 +1035,9 @@ ALTER TABLE public.hotel_manager OWNER TO root;
 --
 
 CREATE TABLE public.hotel_marketingstrategy (
+    hotel_strategy_id integer NOT NULL,
     hotelid integer NOT NULL,
-    strategy character varying(100) NOT NULL,
-    hotel_strategy_id integer NOT NULL
+    strategy character varying(100) NOT NULL
 );
 
 
@@ -1062,9 +1062,9 @@ ALTER TABLE public.hotel_marketingstrategy ALTER COLUMN hotel_strategy_id ADD GE
 --
 
 CREATE TABLE public.hotel_technology (
+    hotel_technology_id integer NOT NULL,
     hotelid integer NOT NULL,
-    technology character varying(100) NOT NULL,
-    hotel_technology_id integer NOT NULL
+    technology character varying(100) NOT NULL
 );
 
 
@@ -1115,9 +1115,9 @@ ALTER TABLE public.normal_user OWNER TO root;
 --
 
 CREATE TABLE public.normaluser_address (
+    normaluser_address_id integer NOT NULL,
     userid integer NOT NULL,
-    useraddress character varying(100) NOT NULL,
-    normaluser_address_id integer NOT NULL
+    useraddress character varying(100) NOT NULL
 );
 
 
@@ -1142,9 +1142,9 @@ ALTER TABLE public.normaluser_address ALTER COLUMN normaluser_address_id ADD GEN
 --
 
 CREATE TABLE public.normaluser_telephone (
+    normaluser_telephone_id integer NOT NULL,
     userid integer NOT NULL,
-    usertelephone character varying(100) NOT NULL,
-    normaluser_telephone_id integer NOT NULL
+    usertelephone character varying(100) NOT NULL
 );
 
 
@@ -1241,7 +1241,7 @@ INSERT INTO public.details VALUES (1, 'Modern', 'Wheelchair Accessible', 'Standa
 -- Data for Name: details_amentities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.details_amentities OVERRIDING SYSTEM VALUE VALUES (1, 'Free Wi-Fi', 0);
+INSERT INTO public.details_amentities OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, 'Free Wi-Fi');
 
 
 --
@@ -1300,24 +1300,24 @@ INSERT INTO public.normal_user VALUES (4, '2024-02-06');
 -- Data for Name: normaluser_address; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (1, '123 Main St', 0);
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (1, '456 Oak St', 1);
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (3, '123 Main St', 2);
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (3, '456 Oak St', 3);
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (4, '123 Main St', 4);
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (4, '456 Oak Ave', 5);
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '123 Main St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '456 Oak St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '123 Main St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '456 Oak St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '123 Main St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '456 Oak Ave');
 
 
 --
 -- Data for Name: normaluser_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (1, '555-1234', 0);
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (1, '555-5678', 1);
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (3, '555-1234', 2);
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (3, '555-5678', 3);
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (4, '555-1234', 4);
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (4, '555-5678', 5);
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '555-1234');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '555-5678');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '555-1234');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '555-5678');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '555-1234');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '555-5678');
 
 
 --
