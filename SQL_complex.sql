@@ -10,32 +10,30 @@ ORDER BY ManagedBranches DESC;
 
 
 -- top 10 hotels with an average rating of at least 4.5,
-
-categorizing them by revenue level based on booking amounts and counting the number of unique customers per hotel*/
+-- categorizing them by revenue level based on booking amounts and counting the number of unique customers per hotel
 SELECT 
-    "HOTEL"."HotelName", 
-    AVG("HOTEL_BRANCH"."Rating/Reviews") AS "AverageRating", 
-    SUM("ROOM"."PriceNormal" * "BOOKING"."NumberOfBooking") AS "TotalRevenue",
-    COUNT(DISTINCT "CUSTOMER"."CustomerID") AS "UniqueCustomers",
+    "hotel"."hotelname", 
+    AVG("hotel_branch"."rating_reviews") AS "averagerating", 
+    SUM("room"."pricenormal" * "booking"."numberofbooking") AS "totalrevenue",
+    COUNT(DISTINCT "booking"."userid") AS "uniquecustomers",
     CASE 
-        WHEN "TotalRevenue" > 10000 THEN 'High Revenue'
-        WHEN "TotalRevenue" > 5000 THEN 'Medium Revenue'
+        WHEN SUM("room"."pricenormal" * "booking"."numberofbooking") > 10000 THEN 'High Revenue'
+        WHEN SUM("room"."pricenormal" * "booking"."numberofbooking") > 5000 THEN 'Medium Revenue'
         ELSE 'Low Revenue'
-    END AS "RevenueCategory"
+    END AS "revenuecategory"
 FROM 
-    "HOTEL"
+    "hotel"
 JOIN 
-    "HOTEL_BRANCH" ON "HOTEL"."HotelID" = "HOTEL_BRANCH"."HotelID(HOTEL_BRANCH)"
+    "hotel_branch" ON "hotel"."hotelid" = "hotel_branch"."hotelid"
 JOIN 
-    "ROOM" ON "HOTEL_BRANCH"."BranchID" = "ROOM"."BranchID(ROOM)"
+    "room" ON "hotel_branch"."branchid" = "room"."branchid"
 JOIN 
-    "BOOKING" ON "ROOM"."RoomID" = "BOOKING"."RoomID(BOOKING)"
-JOIN 
-    "CUSTOMER" ON "BOOKING"."CustomerID(BOOKING)" = "CUSTOMER"."CustomerID"
+    "booking" ON "room"."roomid" = "booking"."roomid"
 GROUP BY 
-    "HOTEL"."HotelName"
+    "hotel"."hotelname"
 HAVING 
-    "AverageRating" >= 4.5
+    AVG("hotel_branch"."rating_reviews") >= 4.5 
 ORDER BY 
-    "AverageRating" DESC, "TotalRevenue" DESC
+    "averagerating" DESC, "totalrevenue" DESC
 LIMIT 10;
+
