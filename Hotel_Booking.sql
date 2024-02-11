@@ -1037,7 +1037,7 @@ ALTER TABLE public.hotel_manager OWNER TO root;
 CREATE TABLE public.hotel_marketingstrategy (
     hotelid integer NOT NULL,
     strategy character varying(100) NOT NULL,
-    hotel_marketingstrategy integer NOT NULL
+    hotel_strategy_id integer NOT NULL
 );
 
 
@@ -1047,7 +1047,7 @@ ALTER TABLE public.hotel_marketingstrategy OWNER TO root;
 -- Name: hotel_marketingstrategy_hotel_marketingstrategy_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
-ALTER TABLE public.hotel_marketingstrategy ALTER COLUMN hotel_marketingstrategy ADD GENERATED ALWAYS AS IDENTITY (
+ALTER TABLE public.hotel_marketingstrategy ALTER COLUMN hotel_strategy_id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.hotel_marketingstrategy_hotel_marketingstrategy_seq
     START WITH 0
     INCREMENT BY 1
@@ -1523,7 +1523,7 @@ ALTER TABLE ONLY public.hotel_manager
 --
 
 ALTER TABLE ONLY public.hotel_marketingstrategy
-    ADD CONSTRAINT hotel_marketingstrategy_pkey PRIMARY KEY (hotel_marketingstrategy) INCLUDE (hotel_marketingstrategy);
+    ADD CONSTRAINT hotel_marketingstrategy_pkey PRIMARY KEY (hotel_strategy_id) INCLUDE (hotel_strategy_id);
 
 
 --
