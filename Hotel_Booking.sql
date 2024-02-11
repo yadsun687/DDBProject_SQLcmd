@@ -860,7 +860,7 @@ ALTER TABLE public.branch_facilities ALTER COLUMN branch_facility_id ADD GENERAT
 --
 
 CREATE TABLE public.branch_securitymeasures (
-    branch_securitymeasure_id integer NOT NULL,
+    branch_measure_id integer NOT NULL,
     branchid integer NOT NULL,
     measure character varying(100) NOT NULL
 );
@@ -872,7 +872,7 @@ ALTER TABLE public.branch_securitymeasures OWNER TO root;
 -- Name: branch_securitymeasures_branch_securitymeasure_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
-ALTER TABLE public.branch_securitymeasures ALTER COLUMN branch_securitymeasure_id ADD GENERATED ALWAYS AS IDENTITY (
+ALTER TABLE public.branch_securitymeasures ALTER COLUMN branch_measure_id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.branch_securitymeasures_branch_securitymeasure_id_seq
     START WITH 0
     INCREMENT BY 1
@@ -914,7 +914,7 @@ ALTER TABLE public.branch_telephone ALTER COLUMN branch_telephone_id ADD GENERAT
 --
 
 CREATE TABLE public.branch_transportation (
-    transportation_id integer NOT NULL,
+    branch_transportation_id integer NOT NULL,
     branchid integer NOT NULL,
     transportation character varying(100) NOT NULL
 );
@@ -926,7 +926,7 @@ ALTER TABLE public.branch_transportation OWNER TO root;
 -- Name: branch_transportation_transportation_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
-ALTER TABLE public.branch_transportation ALTER COLUMN transportation_id ADD GENERATED ALWAYS AS IDENTITY (
+ALTER TABLE public.branch_transportation ALTER COLUMN branch_transportation_id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.branch_transportation_transportation_id_seq
     START WITH 0
     INCREMENT BY 1
@@ -1475,7 +1475,7 @@ ALTER TABLE ONLY public.branch_facilities
 --
 
 ALTER TABLE ONLY public.branch_securitymeasures
-    ADD CONSTRAINT branch_measure_pkey PRIMARY KEY (branch_securitymeasure_id) INCLUDE (branch_securitymeasure_id);
+    ADD CONSTRAINT branch_measure_pkey PRIMARY KEY (branch_measure_id) INCLUDE (branch_measure_id);
 
 
 --
@@ -1491,7 +1491,7 @@ ALTER TABLE ONLY public.branch_telephone
 --
 
 ALTER TABLE ONLY public.branch_transportation
-    ADD CONSTRAINT branch_transportation_pk PRIMARY KEY (transportation_id) INCLUDE (transportation_id);
+    ADD CONSTRAINT branch_transportation_pk PRIMARY KEY (branch_transportation_id) INCLUDE (branch_transportation_id);
 
 
 --
