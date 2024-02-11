@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-02-06 16:15:29 UTC
+-- Started on 2024-02-11 12:53:04 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,26 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 252 (class 1255 OID 49287)
+-- TOC entry 4 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO pg_database_owner;
+
+--
+-- TOC entry 3518 (class 0 OID 0)
+-- Dependencies: 4
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- TOC entry 235 (class 1255 OID 24681)
 -- Name: admins_delete_bookings(character varying, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -67,7 +86,7 @@ $$;
 ALTER PROCEDURE public.admins_delete_bookings(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer) OWNER TO root;
 
 --
--- TOC entry 253 (class 1255 OID 49286)
+-- TOC entry 247 (class 1255 OID 24682)
 -- Name: admins_edit_bookings(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -119,7 +138,7 @@ $$;
 ALTER PROCEDURE public.admins_edit_bookings(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer) OWNER TO root;
 
 --
--- TOC entry 251 (class 1255 OID 49284)
+-- TOC entry 248 (class 1255 OID 24683)
 -- Name: admins_view_all_bookings(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
 --
 
@@ -212,7 +231,7 @@ $$;
 ALTER FUNCTION public.admins_view_all_bookings(p_user_email character varying, p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 247 (class 1255 OID 41727)
+-- TOC entry 249 (class 1255 OID 24684)
 -- Name: insert_booking_with_user_and_room(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -294,7 +313,7 @@ $$;
 ALTER PROCEDURE public.insert_booking_with_user_and_room(IN p_user_email character varying, IN p_user_password character varying, IN p_room_id integer, IN p_checkin_date date, IN p_pay_type character varying, IN p_number_of_booking integer) OWNER TO root;
 
 --
--- TOC entry 248 (class 1255 OID 41724)
+-- TOC entry 250 (class 1255 OID 24685)
 -- Name: login_user(character varying, character varying); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -327,7 +346,7 @@ $$;
 ALTER PROCEDURE public.login_user(IN p_user_email character varying, IN p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 246 (class 1255 OID 41725)
+-- TOC entry 251 (class 1255 OID 24686)
 -- Name: logout_user(character varying, character varying); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -360,7 +379,7 @@ $$;
 ALTER PROCEDURE public.logout_user(IN p_user_email character varying, IN p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 245 (class 1255 OID 41694)
+-- TOC entry 252 (class 1255 OID 24687)
 -- Name: register_all_user(character varying, character varying, character varying, character varying[], date, character varying[], character varying[]); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -445,7 +464,7 @@ $$;
 ALTER PROCEDURE public.register_all_user(IN p_user_password character varying, IN p_user_name character varying, IN p_user_email character varying, IN p_role_type character varying[], IN p_birthdate date, IN normaluser_address character varying[], IN normaluser_telephone character varying[]) OWNER TO root;
 
 --
--- TOC entry 255 (class 1255 OID 49278)
+-- TOC entry 253 (class 1255 OID 24688)
 -- Name: user_delete_booking(character varying, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -510,7 +529,7 @@ $$;
 ALTER PROCEDURE public.user_delete_booking(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer) OWNER TO root;
 
 --
--- TOC entry 250 (class 1255 OID 49277)
+-- TOC entry 254 (class 1255 OID 24689)
 -- Name: user_edit_booking(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -597,7 +616,7 @@ $$;
 ALTER PROCEDURE public.user_edit_booking(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer) OWNER TO root;
 
 --
--- TOC entry 254 (class 1255 OID 41701)
+-- TOC entry 255 (class 1255 OID 24690)
 -- Name: user_view_all_room(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
 --
 
@@ -685,7 +704,7 @@ $$;
 ALTER FUNCTION public.user_view_all_room(p_user_email character varying, p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 249 (class 1255 OID 49273)
+-- TOC entry 256 (class 1255 OID 24691)
 -- Name: user_view_his_booking(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
 --
 
@@ -801,7 +820,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 218 (class 1259 OID 41518)
+-- TOC entry 215 (class 1259 OID 24693)
 -- Name: admins; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -813,7 +832,7 @@ CREATE TABLE public.admins (
 ALTER TABLE public.admins OWNER TO root;
 
 --
--- TOC entry 215 (class 1259 OID 41283)
+-- TOC entry 216 (class 1259 OID 24696)
 -- Name: all_user; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -828,7 +847,7 @@ CREATE TABLE public.all_user (
 ALTER TABLE public.all_user OWNER TO root;
 
 --
--- TOC entry 224 (class 1259 OID 41579)
+-- TOC entry 217 (class 1259 OID 24699)
 -- Name: booking; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -845,7 +864,7 @@ CREATE TABLE public.booking (
 ALTER TABLE public.booking OWNER TO root;
 
 --
--- TOC entry 230 (class 1259 OID 41646)
+-- TOC entry 218 (class 1259 OID 24702)
 -- Name: branch_facilities; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -858,7 +877,7 @@ CREATE TABLE public.branch_facilities (
 ALTER TABLE public.branch_facilities OWNER TO root;
 
 --
--- TOC entry 231 (class 1259 OID 41661)
+-- TOC entry 219 (class 1259 OID 24705)
 -- Name: branch_securitymeasures; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -871,7 +890,7 @@ CREATE TABLE public.branch_securitymeasures (
 ALTER TABLE public.branch_securitymeasures OWNER TO root;
 
 --
--- TOC entry 233 (class 1259 OID 41684)
+-- TOC entry 220 (class 1259 OID 24708)
 -- Name: branch_telephone; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -884,20 +903,36 @@ CREATE TABLE public.branch_telephone (
 ALTER TABLE public.branch_telephone OWNER TO root;
 
 --
--- TOC entry 232 (class 1259 OID 41674)
+-- TOC entry 221 (class 1259 OID 24711)
 -- Name: branch_transportation; Type: TABLE; Schema: public; Owner: root
 --
 
 CREATE TABLE public.branch_transportation (
     branchid integer NOT NULL,
-    transportation character varying(100) NOT NULL
+    transportation character varying(100) NOT NULL,
+    transportation_id integer NOT NULL
 );
 
 
 ALTER TABLE public.branch_transportation OWNER TO root;
 
 --
--- TOC entry 220 (class 1259 OID 41538)
+-- TOC entry 234 (class 1259 OID 24906)
+-- Name: branch_transportation_transportation_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.branch_transportation ALTER COLUMN transportation_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.branch_transportation_transportation_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 24714)
 -- Name: details; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -921,7 +956,7 @@ CREATE TABLE public.details (
 ALTER TABLE public.details OWNER TO root;
 
 --
--- TOC entry 226 (class 1259 OID 41606)
+-- TOC entry 223 (class 1259 OID 24719)
 -- Name: details_amentities; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -934,7 +969,7 @@ CREATE TABLE public.details_amentities (
 ALTER TABLE public.details_amentities OWNER TO root;
 
 --
--- TOC entry 221 (class 1259 OID 41545)
+-- TOC entry 224 (class 1259 OID 24722)
 -- Name: hotel; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -949,7 +984,7 @@ CREATE TABLE public.hotel (
 ALTER TABLE public.hotel OWNER TO root;
 
 --
--- TOC entry 222 (class 1259 OID 41555)
+-- TOC entry 225 (class 1259 OID 24725)
 -- Name: hotel_branch; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -969,7 +1004,7 @@ CREATE TABLE public.hotel_branch (
 ALTER TABLE public.hotel_branch OWNER TO root;
 
 --
--- TOC entry 217 (class 1259 OID 41508)
+-- TOC entry 226 (class 1259 OID 24728)
 -- Name: hotel_manager; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -981,7 +1016,7 @@ CREATE TABLE public.hotel_manager (
 ALTER TABLE public.hotel_manager OWNER TO root;
 
 --
--- TOC entry 228 (class 1259 OID 41626)
+-- TOC entry 227 (class 1259 OID 24731)
 -- Name: hotel_marketingstrategy; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -994,7 +1029,7 @@ CREATE TABLE public.hotel_marketingstrategy (
 ALTER TABLE public.hotel_marketingstrategy OWNER TO root;
 
 --
--- TOC entry 229 (class 1259 OID 41631)
+-- TOC entry 228 (class 1259 OID 24734)
 -- Name: hotel_technology; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -1007,7 +1042,7 @@ CREATE TABLE public.hotel_technology (
 ALTER TABLE public.hotel_technology OWNER TO root;
 
 --
--- TOC entry 216 (class 1259 OID 41303)
+-- TOC entry 229 (class 1259 OID 24737)
 -- Name: logs; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -1022,7 +1057,7 @@ CREATE TABLE public.logs (
 ALTER TABLE public.logs OWNER TO root;
 
 --
--- TOC entry 219 (class 1259 OID 41528)
+-- TOC entry 230 (class 1259 OID 24740)
 -- Name: normal_user; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -1035,7 +1070,7 @@ CREATE TABLE public.normal_user (
 ALTER TABLE public.normal_user OWNER TO root;
 
 --
--- TOC entry 225 (class 1259 OID 41596)
+-- TOC entry 231 (class 1259 OID 24743)
 -- Name: normaluser_address; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -1048,7 +1083,7 @@ CREATE TABLE public.normaluser_address (
 ALTER TABLE public.normaluser_address OWNER TO root;
 
 --
--- TOC entry 227 (class 1259 OID 41616)
+-- TOC entry 232 (class 1259 OID 24746)
 -- Name: normaluser_telephone; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -1061,7 +1096,7 @@ CREATE TABLE public.normaluser_telephone (
 ALTER TABLE public.normaluser_telephone OWNER TO root;
 
 --
--- TOC entry 223 (class 1259 OID 41565)
+-- TOC entry 233 (class 1259 OID 24749)
 -- Name: room; Type: TABLE; Schema: public; Owner: root
 --
 
@@ -1079,8 +1114,8 @@ CREATE TABLE public.room (
 ALTER TABLE public.room OWNER TO root;
 
 --
--- TOC entry 3493 (class 0 OID 41518)
--- Dependencies: 218
+-- TOC entry 3493 (class 0 OID 24693)
+-- Dependencies: 215
 -- Data for Name: admins; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1089,8 +1124,8 @@ INSERT INTO public.admins VALUES (4);
 
 
 --
--- TOC entry 3490 (class 0 OID 41283)
--- Dependencies: 215
+-- TOC entry 3494 (class 0 OID 24696)
+-- Dependencies: 216
 -- Data for Name: all_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1101,8 +1136,8 @@ INSERT INTO public.all_user VALUES (4, 'passw1221ord123', 'JohnDoe2', 'jo132hn.d
 
 
 --
--- TOC entry 3499 (class 0 OID 41579)
--- Dependencies: 224
+-- TOC entry 3495 (class 0 OID 24699)
+-- Dependencies: 217
 -- Data for Name: booking; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1110,40 +1145,40 @@ INSERT INTO public.booking VALUES (2, 1, 1, '3024-03-10', 'Credit Card', 2);
 
 
 --
--- TOC entry 3505 (class 0 OID 41646)
--- Dependencies: 230
+-- TOC entry 3496 (class 0 OID 24702)
+-- Dependencies: 218
 -- Data for Name: branch_facilities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3506 (class 0 OID 41661)
--- Dependencies: 231
+-- TOC entry 3497 (class 0 OID 24705)
+-- Dependencies: 219
 -- Data for Name: branch_securitymeasures; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3508 (class 0 OID 41684)
--- Dependencies: 233
+-- TOC entry 3498 (class 0 OID 24708)
+-- Dependencies: 220
 -- Data for Name: branch_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3507 (class 0 OID 41674)
--- Dependencies: 232
+-- TOC entry 3499 (class 0 OID 24711)
+-- Dependencies: 221
 -- Data for Name: branch_transportation; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3495 (class 0 OID 41538)
--- Dependencies: 220
+-- TOC entry 3500 (class 0 OID 24714)
+-- Dependencies: 222
 -- Data for Name: details; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1151,8 +1186,8 @@ INSERT INTO public.details VALUES (1, 'Modern', 'Wheelchair Accessible', 'Standa
 
 
 --
--- TOC entry 3501 (class 0 OID 41606)
--- Dependencies: 226
+-- TOC entry 3501 (class 0 OID 24719)
+-- Dependencies: 223
 -- Data for Name: details_amentities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1160,8 +1195,8 @@ INSERT INTO public.details_amentities VALUES (1, 'Free Wi-Fi');
 
 
 --
--- TOC entry 3496 (class 0 OID 41545)
--- Dependencies: 221
+-- TOC entry 3502 (class 0 OID 24722)
+-- Dependencies: 224
 -- Data for Name: hotel; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1169,8 +1204,8 @@ INSERT INTO public.hotel VALUES (1, 1, 'Sample Hotel', 'Sample Brand');
 
 
 --
--- TOC entry 3497 (class 0 OID 41555)
--- Dependencies: 222
+-- TOC entry 3503 (class 0 OID 24725)
+-- Dependencies: 225
 -- Data for Name: hotel_branch; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1178,8 +1213,8 @@ INSERT INTO public.hotel_branch VALUES (1, 1, 'Main Branch', 'City Center', 'Mod
 
 
 --
--- TOC entry 3492 (class 0 OID 41508)
--- Dependencies: 217
+-- TOC entry 3504 (class 0 OID 24728)
+-- Dependencies: 226
 -- Data for Name: hotel_manager; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1187,24 +1222,24 @@ INSERT INTO public.hotel_manager VALUES (1);
 
 
 --
--- TOC entry 3503 (class 0 OID 41626)
--- Dependencies: 228
+-- TOC entry 3505 (class 0 OID 24731)
+-- Dependencies: 227
 -- Data for Name: hotel_marketingstrategy; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3504 (class 0 OID 41631)
--- Dependencies: 229
+-- TOC entry 3506 (class 0 OID 24734)
+-- Dependencies: 228
 -- Data for Name: hotel_technology; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3491 (class 0 OID 41303)
--- Dependencies: 216
+-- TOC entry 3507 (class 0 OID 24737)
+-- Dependencies: 229
 -- Data for Name: logs; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1214,8 +1249,8 @@ INSERT INTO public.logs VALUES (13, 1, NULL, '2024-02-06 15:54:07.735037');
 
 
 --
--- TOC entry 3494 (class 0 OID 41528)
--- Dependencies: 219
+-- TOC entry 3508 (class 0 OID 24740)
+-- Dependencies: 230
 -- Data for Name: normal_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1226,8 +1261,8 @@ INSERT INTO public.normal_user VALUES (4, '2024-02-06');
 
 
 --
--- TOC entry 3500 (class 0 OID 41596)
--- Dependencies: 225
+-- TOC entry 3509 (class 0 OID 24743)
+-- Dependencies: 231
 -- Data for Name: normaluser_address; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1240,8 +1275,8 @@ INSERT INTO public.normaluser_address VALUES (4, '456 Oak Ave');
 
 
 --
--- TOC entry 3502 (class 0 OID 41616)
--- Dependencies: 227
+-- TOC entry 3510 (class 0 OID 24746)
+-- Dependencies: 232
 -- Data for Name: normaluser_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1254,8 +1289,8 @@ INSERT INTO public.normaluser_telephone VALUES (4, '555-5678');
 
 
 --
--- TOC entry 3498 (class 0 OID 41565)
--- Dependencies: 223
+-- TOC entry 3511 (class 0 OID 24749)
+-- Dependencies: 233
 -- Data for Name: room; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -1263,7 +1298,16 @@ INSERT INTO public.room VALUES (1, 1, 1, true, 100, 120, 150);
 
 
 --
--- TOC entry 3298 (class 2606 OID 41544)
+-- TOC entry 3519 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: branch_transportation_transportation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.branch_transportation_transportation_id_seq', 0, false);
+
+
+--
+-- TOC entry 3305 (class 2606 OID 24753)
 -- Name: details DETAILS_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1272,7 +1316,7 @@ ALTER TABLE ONLY public.details
 
 
 --
--- TOC entry 3285 (class 2606 OID 41594)
+-- TOC entry 3286 (class 2606 OID 24754)
 -- Name: booking NumberOfBooking; Type: CHECK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1281,7 +1325,7 @@ ALTER TABLE public.booking
 
 
 --
--- TOC entry 3286 (class 2606 OID 41595)
+-- TOC entry 3287 (class 2606 OID 24755)
 -- Name: booking NumberOfBooking2; Type: CHECK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1290,7 +1334,7 @@ ALTER TABLE public.booking
 
 
 --
--- TOC entry 3306 (class 2606 OID 41569)
+-- TOC entry 3329 (class 2606 OID 24757)
 -- Name: room ROOM_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1299,7 +1343,7 @@ ALTER TABLE ONLY public.room
 
 
 --
--- TOC entry 3308 (class 2606 OID 41578)
+-- TOC entry 3331 (class 2606 OID 24759)
 -- Name: room RoomID; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1308,7 +1352,7 @@ ALTER TABLE ONLY public.room
 
 
 --
--- TOC entry 3294 (class 2606 OID 41522)
+-- TOC entry 3289 (class 2606 OID 24761)
 -- Name: admins admins_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1317,7 +1361,7 @@ ALTER TABLE ONLY public.admins
 
 
 --
--- TOC entry 3288 (class 2606 OID 41287)
+-- TOC entry 3291 (class 2606 OID 24763)
 -- Name: all_user all_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1326,7 +1370,7 @@ ALTER TABLE ONLY public.all_user
 
 
 --
--- TOC entry 3310 (class 2606 OID 41583)
+-- TOC entry 3293 (class 2606 OID 24765)
 -- Name: booking booking_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1335,7 +1379,7 @@ ALTER TABLE ONLY public.booking
 
 
 --
--- TOC entry 3302 (class 2606 OID 41571)
+-- TOC entry 3311 (class 2606 OID 24767)
 -- Name: hotel_branch branch; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1344,7 +1388,7 @@ ALTER TABLE ONLY public.hotel_branch
 
 
 --
--- TOC entry 3322 (class 2606 OID 41650)
+-- TOC entry 3295 (class 2606 OID 24769)
 -- Name: branch_facilities branch_facilities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1353,7 +1397,7 @@ ALTER TABLE ONLY public.branch_facilities
 
 
 --
--- TOC entry 3324 (class 2606 OID 41665)
+-- TOC entry 3297 (class 2606 OID 24771)
 -- Name: branch_securitymeasures branch_measure_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1362,7 +1406,7 @@ ALTER TABLE ONLY public.branch_securitymeasures
 
 
 --
--- TOC entry 3328 (class 2606 OID 41688)
+-- TOC entry 3299 (class 2606 OID 24773)
 -- Name: branch_telephone branch_telephone_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1371,16 +1415,16 @@ ALTER TABLE ONLY public.branch_telephone
 
 
 --
--- TOC entry 3326 (class 2606 OID 41678)
+-- TOC entry 3301 (class 2606 OID 24903)
 -- Name: branch_transportation branch_transportation_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.branch_transportation
-    ADD CONSTRAINT branch_transportation_pkey PRIMARY KEY (branchid, transportation);
+    ADD CONSTRAINT branch_transportation_pkey PRIMARY KEY (branchid, transportation_id);
 
 
 --
--- TOC entry 3314 (class 2606 OID 41610)
+-- TOC entry 3307 (class 2606 OID 24777)
 -- Name: details_amentities details_amentities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1389,7 +1433,7 @@ ALTER TABLE ONLY public.details_amentities
 
 
 --
--- TOC entry 3304 (class 2606 OID 41559)
+-- TOC entry 3313 (class 2606 OID 24779)
 -- Name: hotel_branch hotel_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1398,7 +1442,7 @@ ALTER TABLE ONLY public.hotel_branch
 
 
 --
--- TOC entry 3292 (class 2606 OID 41512)
+-- TOC entry 3315 (class 2606 OID 24781)
 -- Name: hotel_manager hotel_manager_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1407,7 +1451,7 @@ ALTER TABLE ONLY public.hotel_manager
 
 
 --
--- TOC entry 3318 (class 2606 OID 41630)
+-- TOC entry 3317 (class 2606 OID 24783)
 -- Name: hotel_marketingstrategy hotel_marketingstrategy_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1416,7 +1460,7 @@ ALTER TABLE ONLY public.hotel_marketingstrategy
 
 
 --
--- TOC entry 3300 (class 2606 OID 41549)
+-- TOC entry 3309 (class 2606 OID 24785)
 -- Name: hotel hotel_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1425,7 +1469,7 @@ ALTER TABLE ONLY public.hotel
 
 
 --
--- TOC entry 3320 (class 2606 OID 41635)
+-- TOC entry 3319 (class 2606 OID 24787)
 -- Name: hotel_technology hotel_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1434,7 +1478,7 @@ ALTER TABLE ONLY public.hotel_technology
 
 
 --
--- TOC entry 3290 (class 2606 OID 41307)
+-- TOC entry 3321 (class 2606 OID 24789)
 -- Name: logs logs_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1443,7 +1487,7 @@ ALTER TABLE ONLY public.logs
 
 
 --
--- TOC entry 3296 (class 2606 OID 41532)
+-- TOC entry 3323 (class 2606 OID 24791)
 -- Name: normal_user normal_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1452,7 +1496,7 @@ ALTER TABLE ONLY public.normal_user
 
 
 --
--- TOC entry 3312 (class 2606 OID 41600)
+-- TOC entry 3325 (class 2606 OID 24793)
 -- Name: normaluser_address normaluser_address_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1461,7 +1505,7 @@ ALTER TABLE ONLY public.normaluser_address
 
 
 --
--- TOC entry 3316 (class 2606 OID 41620)
+-- TOC entry 3327 (class 2606 OID 24795)
 -- Name: normaluser_telephone normaluser_telephone_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1470,7 +1514,16 @@ ALTER TABLE ONLY public.normaluser_telephone
 
 
 --
--- TOC entry 3344 (class 2606 OID 41666)
+-- TOC entry 3303 (class 2606 OID 24901)
+-- Name: branch_transportation transportation_unique; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_transportation
+    ADD CONSTRAINT transportation_unique UNIQUE (transportation);
+
+
+--
+-- TOC entry 3336 (class 2606 OID 24796)
 -- Name: branch_securitymeasures Branch_SecurityMeasures; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1479,7 +1532,7 @@ ALTER TABLE ONLY public.branch_securitymeasures
 
 
 --
--- TOC entry 3329 (class 2606 OID 41308)
+-- TOC entry 3345 (class 2606 OID 24801)
 -- Name: logs UserIDLogs; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1488,7 +1541,7 @@ ALTER TABLE ONLY public.logs
 
 
 --
--- TOC entry 3336 (class 2606 OID 41589)
+-- TOC entry 3333 (class 2606 OID 24806)
 -- Name: booking booking_room; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1497,7 +1550,7 @@ ALTER TABLE ONLY public.booking
 
 
 --
--- TOC entry 3337 (class 2606 OID 41584)
+-- TOC entry 3334 (class 2606 OID 24811)
 -- Name: booking booking_user; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1506,7 +1559,7 @@ ALTER TABLE ONLY public.booking
 
 
 --
--- TOC entry 3343 (class 2606 OID 41651)
+-- TOC entry 3335 (class 2606 OID 24816)
 -- Name: branch_facilities branch_facilities; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1515,7 +1568,7 @@ ALTER TABLE ONLY public.branch_facilities
 
 
 --
--- TOC entry 3345 (class 2606 OID 41689)
+-- TOC entry 3337 (class 2606 OID 24821)
 -- Name: branch_transportation branch_telephone; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1524,7 +1577,7 @@ ALTER TABLE ONLY public.branch_transportation
 
 
 --
--- TOC entry 3346 (class 2606 OID 41679)
+-- TOC entry 3338 (class 2606 OID 24826)
 -- Name: branch_transportation branch_transportation; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1533,7 +1586,7 @@ ALTER TABLE ONLY public.branch_transportation
 
 
 --
--- TOC entry 3339 (class 2606 OID 41611)
+-- TOC entry 3339 (class 2606 OID 24831)
 -- Name: details_amentities details_amentities_details; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1542,7 +1595,7 @@ ALTER TABLE ONLY public.details_amentities
 
 
 --
--- TOC entry 3334 (class 2606 OID 41560)
+-- TOC entry 3341 (class 2606 OID 24836)
 -- Name: hotel_branch hotel_branch_hotel; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1551,7 +1604,7 @@ ALTER TABLE ONLY public.hotel_branch
 
 
 --
--- TOC entry 3341 (class 2606 OID 41636)
+-- TOC entry 3343 (class 2606 OID 24841)
 -- Name: hotel_marketingstrategy hotel_marketingstrategy_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1560,7 +1613,7 @@ ALTER TABLE ONLY public.hotel_marketingstrategy
 
 
 --
--- TOC entry 3333 (class 2606 OID 41550)
+-- TOC entry 3340 (class 2606 OID 24846)
 -- Name: hotel hotel_normal_user; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1569,7 +1622,7 @@ ALTER TABLE ONLY public.hotel
 
 
 --
--- TOC entry 3342 (class 2606 OID 41641)
+-- TOC entry 3344 (class 2606 OID 24851)
 -- Name: hotel_technology hotel_technology_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1578,7 +1631,7 @@ ALTER TABLE ONLY public.hotel_technology
 
 
 --
--- TOC entry 3338 (class 2606 OID 41601)
+-- TOC entry 3347 (class 2606 OID 24856)
 -- Name: normaluser_address normaluser_address_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1587,7 +1640,7 @@ ALTER TABLE ONLY public.normaluser_address
 
 
 --
--- TOC entry 3340 (class 2606 OID 41621)
+-- TOC entry 3348 (class 2606 OID 24861)
 -- Name: normaluser_telephone normaluser_telephone_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1596,7 +1649,7 @@ ALTER TABLE ONLY public.normaluser_telephone
 
 
 --
--- TOC entry 3335 (class 2606 OID 41572)
+-- TOC entry 3349 (class 2606 OID 24866)
 -- Name: room room_branch; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1605,7 +1658,7 @@ ALTER TABLE ONLY public.room
 
 
 --
--- TOC entry 3331 (class 2606 OID 41523)
+-- TOC entry 3332 (class 2606 OID 24871)
 -- Name: admins userid_admins; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1614,7 +1667,7 @@ ALTER TABLE ONLY public.admins
 
 
 --
--- TOC entry 3330 (class 2606 OID 41513)
+-- TOC entry 3342 (class 2606 OID 24876)
 -- Name: hotel_manager userid_hotel_manager; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1623,7 +1676,7 @@ ALTER TABLE ONLY public.hotel_manager
 
 
 --
--- TOC entry 3332 (class 2606 OID 41533)
+-- TOC entry 3346 (class 2606 OID 24881)
 -- Name: normal_user userid_normal_user; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1631,7 +1684,7 @@ ALTER TABLE ONLY public.normal_user
     ADD CONSTRAINT userid_normal_user FOREIGN KEY (userid) REFERENCES public.all_user(userid) NOT VALID;
 
 
--- Completed on 2024-02-06 16:15:29 UTC
+-- Completed on 2024-02-11 12:53:04 UTC
 
 --
 -- PostgreSQL database dump complete
