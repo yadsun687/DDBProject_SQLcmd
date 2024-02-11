@@ -1,0 +1,23 @@
+{
+    "title": "HOTEL",
+    "required": [
+        "HotelID",
+        "UserID",
+        "HotelName",
+        "BrandIdentity"
+    ],
+    "properties": {
+        "HotelID": {
+            "bsonType": "int"
+        },
+        "UserID": {
+            "bsonType": "int"
+        },
+        "HotelName": {
+            "bsonType": "string"
+        },
+        "BrandIdentity": {
+            "bsonType": "string"
+        }
+    }
+}

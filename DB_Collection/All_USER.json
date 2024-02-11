@@ -1,0 +1,28 @@
+{
+    "title": "ALL_USER",
+    "required": [
+        "UserID",
+        "UserPassword",
+        "UserName",
+        "UserEmail",
+        "RecentLoginDate"
+    ],
+    "properties": {
+        "UserID": {
+            "bsonType": "int"
+        },
+        "UserPassword": {
+            "bsonType": "string"
+        },
+        "UserName": {
+            "bsonType": "string"
+        },
+        "UserEmail": {
+            "bsonType": "string",
+            "pattern": "^.+@.+$"
+        },
+        "RecentLoginDate": {
+            "bsonType": "date"
+        }
+    }
+}

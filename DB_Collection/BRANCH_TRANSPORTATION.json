@@ -1,0 +1,15 @@
+{
+    "title": "BRANCH_TRANSPORTATION",
+    "required": [
+        "BranchID",
+        "Transportation"
+    ],
+    "properties": {
+        "BranchID": {
+            "bsonType": "int"
+        },
+        "Transportation": {
+            "bsonType": "string"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "title": "HOTEL_MARKETING_STRATEGY",
+    "required": [
+        "HotelID",
+        "Strategy"
+    ],
+    "properties": {
+        "HotelID": {
+            "bsonType": "int"
+        },
+        "Strategy": {
+            "bsonType": "string"
+        }
+    }
+}

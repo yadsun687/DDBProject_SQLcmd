@@ -1,0 +1,15 @@
+{
+    "title": "BRANCH_TELEPHONE",
+    "required": [
+        "BranchID",
+        "BranchTelephone"
+    ],
+    "properties": {
+        "BranchID": {
+            "bsonType": "int"
+        },
+        "BranchTelephone": {
+            "bsonType": "string"
+        }
+    }
+}

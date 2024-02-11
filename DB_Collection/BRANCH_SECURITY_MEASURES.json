@@ -1,0 +1,15 @@
+{
+    "title": "BRANCH_SECURITY_MEASURES",
+    "required": [
+        "BranchID",
+        "Measure"
+    ],
+    "properties": {
+        "BranchID": {
+            "bsonType": "int"
+        },
+        "Measure": {
+            "bsonType": "string"
+        }
+    }
+}

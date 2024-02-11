@@ -1,0 +1,11 @@
+{
+    "title": "ADMIN",
+    "required": [
+        "UserID"
+    ],
+    "properties": {
+        "UserID": {
+            "bsonType": "objectID"
+        }
+    }
+}

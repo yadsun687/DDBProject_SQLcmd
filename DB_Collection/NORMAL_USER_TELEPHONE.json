@@ -1,0 +1,16 @@
+{
+    "title": "NORMAL_USER_TELEPHONE",
+    "required": [
+        "UserID",
+        "UserTelephone"
+    ],
+    "properties": {
+        "UserID": {
+            "bsonType": "int"
+        },
+        "UserTelephone": {
+            "bsonType": "string",
+            "pattern": "^[0-9]{10}$"
+        }
+    }
+}
