@@ -906,8 +906,8 @@ ALTER TABLE public.branch_telephone ALTER COLUMN branch_telephone_id ADD GENERAT
 
 CREATE TABLE public.branch_transportation (
     branchid integer NOT NULL,
-    transportation character varying(100) NOT NULL,
-    transportation_id integer NOT NULL
+    transportation_id integer NOT NULL,
+    transportation character varying(100) NOT NULL
 );
 
 
