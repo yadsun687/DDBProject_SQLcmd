@@ -834,11 +834,26 @@ ALTER TABLE public.booking OWNER TO root;
 
 CREATE TABLE public.branch_facilities (
     branchid integer NOT NULL,
-    facility character varying(100) NOT NULL
+    facility character varying(100) NOT NULL,
+    branch_facilies_id integer NOT NULL
 );
 
 
 ALTER TABLE public.branch_facilities OWNER TO root;
+
+--
+-- Name: branch_facilities_branch_facilies_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.branch_facilities ALTER COLUMN branch_facilies_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.branch_facilities_branch_facilies_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: branch_securitymeasures; Type: TABLE; Schema: public; Owner: root
@@ -950,11 +965,26 @@ ALTER TABLE public.details OWNER TO root;
 
 CREATE TABLE public.details_amentities (
     detailsid integer NOT NULL,
-    amentities character varying(100) NOT NULL
+    amentities character varying(100) NOT NULL,
+    details_amentities_id integer NOT NULL
 );
 
 
 ALTER TABLE public.details_amentities OWNER TO root;
+
+--
+-- Name: details_amentities_details_amentities_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.details_amentities ALTER COLUMN details_amentities_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.details_amentities_details_amentities_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: hotel; Type: TABLE; Schema: public; Owner: root
@@ -1006,11 +1036,26 @@ ALTER TABLE public.hotel_manager OWNER TO root;
 
 CREATE TABLE public.hotel_marketingstrategy (
     hotelid integer NOT NULL,
-    strategy character varying(100) NOT NULL
+    strategy character varying(100) NOT NULL,
+    hotel_marketingstrategy integer NOT NULL
 );
 
 
 ALTER TABLE public.hotel_marketingstrategy OWNER TO root;
+
+--
+-- Name: hotel_marketingstrategy_hotel_marketingstrategy_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.hotel_marketingstrategy ALTER COLUMN hotel_marketingstrategy ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.hotel_marketingstrategy_hotel_marketingstrategy_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: hotel_technology; Type: TABLE; Schema: public; Owner: root
@@ -1018,11 +1063,26 @@ ALTER TABLE public.hotel_marketingstrategy OWNER TO root;
 
 CREATE TABLE public.hotel_technology (
     hotelid integer NOT NULL,
-    technology character varying(100) NOT NULL
+    technology character varying(100) NOT NULL,
+    hotel_technology_id integer NOT NULL
 );
 
 
 ALTER TABLE public.hotel_technology OWNER TO root;
+
+--
+-- Name: hotel_technology_hotel_technology_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.hotel_technology ALTER COLUMN hotel_technology_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.hotel_technology_hotel_technology_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: logs; Type: TABLE; Schema: public; Owner: root
@@ -1056,11 +1116,26 @@ ALTER TABLE public.normal_user OWNER TO root;
 
 CREATE TABLE public.normaluser_address (
     userid integer NOT NULL,
-    useraddress character varying(100) NOT NULL
+    useraddress character varying(100) NOT NULL,
+    normaluser_address_id integer NOT NULL
 );
 
 
 ALTER TABLE public.normaluser_address OWNER TO root;
+
+--
+-- Name: normaluser_address_normaluser_address_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.normaluser_address ALTER COLUMN normaluser_address_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.normaluser_address_normaluser_address_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: normaluser_telephone; Type: TABLE; Schema: public; Owner: root
@@ -1068,11 +1143,26 @@ ALTER TABLE public.normaluser_address OWNER TO root;
 
 CREATE TABLE public.normaluser_telephone (
     userid integer NOT NULL,
-    usertelephone character varying(100) NOT NULL
+    usertelephone character varying(100) NOT NULL,
+    normaluser_telephone_id integer NOT NULL
 );
 
 
 ALTER TABLE public.normaluser_telephone OWNER TO root;
+
+--
+-- Name: normaluser_telephone_normaluser_telephone_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.normaluser_telephone ALTER COLUMN normaluser_telephone_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.normaluser_telephone_normaluser_telephone_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: room; Type: TABLE; Schema: public; Owner: root
@@ -1151,7 +1241,7 @@ INSERT INTO public.details VALUES (1, 'Modern', 'Wheelchair Accessible', 'Standa
 -- Data for Name: details_amentities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.details_amentities VALUES (1, 'Free Wi-Fi');
+INSERT INTO public.details_amentities OVERRIDING SYSTEM VALUE VALUES (1, 'Free Wi-Fi', 0);
 
 
 --
@@ -1210,24 +1300,24 @@ INSERT INTO public.normal_user VALUES (4, '2024-02-06');
 -- Data for Name: normaluser_address; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.normaluser_address VALUES (1, '123 Main St');
-INSERT INTO public.normaluser_address VALUES (1, '456 Oak St');
-INSERT INTO public.normaluser_address VALUES (3, '123 Main St');
-INSERT INTO public.normaluser_address VALUES (3, '456 Oak St');
-INSERT INTO public.normaluser_address VALUES (4, '123 Main St');
-INSERT INTO public.normaluser_address VALUES (4, '456 Oak Ave');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (1, '123 Main St', 0);
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (1, '456 Oak St', 1);
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (3, '123 Main St', 2);
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (3, '456 Oak St', 3);
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (4, '123 Main St', 4);
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (4, '456 Oak Ave', 5);
 
 
 --
 -- Data for Name: normaluser_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.normaluser_telephone VALUES (1, '555-1234');
-INSERT INTO public.normaluser_telephone VALUES (1, '555-5678');
-INSERT INTO public.normaluser_telephone VALUES (3, '555-1234');
-INSERT INTO public.normaluser_telephone VALUES (3, '555-5678');
-INSERT INTO public.normaluser_telephone VALUES (4, '555-1234');
-INSERT INTO public.normaluser_telephone VALUES (4, '555-5678');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (1, '555-1234', 0);
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (1, '555-5678', 1);
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (3, '555-1234', 2);
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (3, '555-5678', 3);
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (4, '555-1234', 4);
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (4, '555-5678', 5);
 
 
 --
@@ -1235,6 +1325,13 @@ INSERT INTO public.normaluser_telephone VALUES (4, '555-5678');
 --
 
 INSERT INTO public.room VALUES (1, 1, 1, true, 100, 120, 150);
+
+
+--
+-- Name: branch_facilities_branch_facilies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.branch_facilities_branch_facilies_id_seq', 0, false);
 
 
 --
@@ -1256,6 +1353,41 @@ SELECT pg_catalog.setval('public.branch_telephone_branch_telephone_id_seq', 0, f
 --
 
 SELECT pg_catalog.setval('public.branch_transportation_transportation_id_seq', 0, false);
+
+
+--
+-- Name: details_amentities_details_amentities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.details_amentities_details_amentities_id_seq', 0, true);
+
+
+--
+-- Name: hotel_marketingstrategy_hotel_marketingstrategy_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.hotel_marketingstrategy_hotel_marketingstrategy_seq', 0, false);
+
+
+--
+-- Name: hotel_technology_hotel_technology_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.hotel_technology_hotel_technology_id_seq', 0, false);
+
+
+--
+-- Name: normaluser_address_normaluser_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.normaluser_address_normaluser_address_id_seq', 5, true);
+
+
+--
+-- Name: normaluser_telephone_normaluser_telephone_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.normaluser_telephone_normaluser_telephone_id_seq', 5, true);
 
 
 --
@@ -1335,7 +1467,7 @@ ALTER TABLE ONLY public.hotel_branch
 --
 
 ALTER TABLE ONLY public.branch_facilities
-    ADD CONSTRAINT branch_facilities_pkey PRIMARY KEY (branchid, facility);
+    ADD CONSTRAINT branch_facilities_pkey PRIMARY KEY (branch_facilies_id) INCLUDE (branch_facilies_id);
 
 
 --
@@ -1367,7 +1499,7 @@ ALTER TABLE ONLY public.branch_transportation
 --
 
 ALTER TABLE ONLY public.details_amentities
-    ADD CONSTRAINT details_amentities_pkey PRIMARY KEY (detailsid, amentities);
+    ADD CONSTRAINT details_amentities_pkey PRIMARY KEY (details_amentities_id) INCLUDE (details_amentities_id);
 
 
 --
@@ -1391,7 +1523,7 @@ ALTER TABLE ONLY public.hotel_manager
 --
 
 ALTER TABLE ONLY public.hotel_marketingstrategy
-    ADD CONSTRAINT hotel_marketingstrategy_pkey PRIMARY KEY (hotelid, strategy);
+    ADD CONSTRAINT hotel_marketingstrategy_pkey PRIMARY KEY (hotel_marketingstrategy) INCLUDE (hotel_marketingstrategy);
 
 
 --
@@ -1407,7 +1539,7 @@ ALTER TABLE ONLY public.hotel
 --
 
 ALTER TABLE ONLY public.hotel_technology
-    ADD CONSTRAINT hotel_technology_pkey PRIMARY KEY (hotelid, technology);
+    ADD CONSTRAINT hotel_technology_pkey PRIMARY KEY (hotel_technology_id) INCLUDE (hotel_technology_id);
 
 
 --
@@ -1431,7 +1563,7 @@ ALTER TABLE ONLY public.normal_user
 --
 
 ALTER TABLE ONLY public.normaluser_address
-    ADD CONSTRAINT normaluser_address_pkey PRIMARY KEY (userid, useraddress);
+    ADD CONSTRAINT normaluser_address_pkey PRIMARY KEY (normaluser_address_id) INCLUDE (normaluser_address_id);
 
 
 --
@@ -1439,7 +1571,7 @@ ALTER TABLE ONLY public.normaluser_address
 --
 
 ALTER TABLE ONLY public.normaluser_telephone
-    ADD CONSTRAINT normaluser_telephone_pkey PRIMARY KEY (userid, usertelephone);
+    ADD CONSTRAINT normaluser_telephone_pkey PRIMARY KEY (normaluser_telephone_id) INCLUDE (normaluser_telephone_id);
 
 
 --
