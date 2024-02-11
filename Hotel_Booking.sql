@@ -835,7 +835,7 @@ ALTER TABLE public.booking OWNER TO root;
 CREATE TABLE public.branch_facilities (
     branchid integer NOT NULL,
     facility character varying(100) NOT NULL,
-    branch_facilies_id integer NOT NULL
+    branch_facility_id integer NOT NULL
 );
 
 
@@ -845,7 +845,7 @@ ALTER TABLE public.branch_facilities OWNER TO root;
 -- Name: branch_facilities_branch_facilies_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
-ALTER TABLE public.branch_facilities ALTER COLUMN branch_facilies_id ADD GENERATED ALWAYS AS IDENTITY (
+ALTER TABLE public.branch_facilities ALTER COLUMN branch_facility_id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.branch_facilities_branch_facilies_id_seq
     START WITH 0
     INCREMENT BY 1
@@ -1467,7 +1467,7 @@ ALTER TABLE ONLY public.hotel_branch
 --
 
 ALTER TABLE ONLY public.branch_facilities
-    ADD CONSTRAINT branch_facilities_pkey PRIMARY KEY (branch_facilies_id) INCLUDE (branch_facilies_id);
+    ADD CONSTRAINT branch_facilities_pkey PRIMARY KEY (branch_facility_id) INCLUDE (branch_facility_id);
 
 
 --
