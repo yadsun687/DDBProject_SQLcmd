@@ -1,85 +1,86 @@
-CREATE OR REPLACE PROCEDURE user_edit_booking(
-    p_user_name VARCHAR(100),
+CREATE OR REPLACE PROCEDURE public.user_edit_booking(
+    p_user_email VARCHAR(100),
     p_user_password VARCHAR(100),
     p_booking_id INTEGER,
-    p_new_checkin_date DATE,
-    p_new_pay_type VARCHAR(100),
-    p_new_number_of_booking INTEGER
+    p_new_checkin_date DATE DEFAULT NULL,
+    p_new_pay_type VARCHAR(100) DEFAULT NULL,
+    p_new_number_of_booking INTEGER DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_user_id INTEGER;
-    v_normal_user_id INTEGER;
-    v_room_status BOOLEAN;
-    v_existing_booking_id INTEGER;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
+    v_old_checkin_date DATE;
+    v_old_pay_type VARCHAR(100);
+    v_old_number_of_booking INTEGER;
 BEGIN
-    -- Check if the user exists and the password is correct
-    SELECT "UserID"
-    INTO v_user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-      AND "UserPassword" = p_user_password;
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
+    -- Get the last login and logout IDs for the user
+    SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    SELECT MAX(CASE WHEN logout IS NOT NULL THEN logid END) INTO last_logout_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    -- Check if the user is currently logged in
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
+    END IF;
+
+    -- Check if the user is found
     IF v_user_id IS NULL THEN
-        RAISE EXCEPTION 'Invalid username or password.';
+        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
 
-    -- Check if the user is in the NORMAL_USER table
-    SELECT "UserID(NORMAL_USER)"
-    INTO v_normal_user_id
-    FROM public."NORMAL_USER"
-    WHERE "UserID(NORMAL_USER)" = v_user_id;
-
-    IF v_normal_user_id IS NULL THEN
-        RAISE EXCEPTION 'User is not a normal user.';
+    -- Check if the user is a normal user
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.NORMAL_USER
+        WHERE UserID = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User found, but not a normal user';
     END IF;
 
-    -- Check if the booking belongs to the user
-    SELECT "BookingID"
-    INTO v_existing_booking_id
-    FROM public."BOOKING" b
-    WHERE b."UserID(BOOKING)" = v_user_id
-      AND b."BookingID" = p_booking_id;
-
-    IF v_existing_booking_id IS NULL THEN
-        RAISE EXCEPTION 'Booking does not belong to the user.';
+    -- Check if the booking exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE BookingID = p_booking_id
+    ) THEN
+        RAISE EXCEPTION 'Booking not found with the given ID';
     END IF;
 
-    -- Check if the room status is true
-    SELECT "Status"
-    INTO v_room_status
-    FROM public."ROOM" r
-    WHERE r."RoomID" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id);
-
-    IF NOT v_room_status THEN
-        RAISE EXCEPTION 'Room status is not available.';
+    -- Check if the user owns the booking
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING b
+        JOIN public.ALL_USER u ON b.UserID = u.UserID
+        WHERE b.BookingID = p_booking_id AND u.UserEmail = p_user_email  AND u.userpassword = p_user_password
+    ) THEN
+        RAISE EXCEPTION 'User does not own the booking with the given ID';
     END IF;
 
-    -- Check for overlapping bookings for the same room
-    SELECT "BookingID"
-    INTO v_existing_booking_id
-    FROM public."BOOKING" b
-    WHERE b."RoomID(BOOKING)" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id)
-      AND b."BookingID" <> p_booking_id
-      AND NOT (
-          ("CheckInDate" < p_new_checkin_date AND "CheckInDate" + "NumberOfBooking" - 1 < p_new_checkin_date)
-          OR
-          ("CheckInDate" > p_new_checkin_date + p_new_number_of_booking - 1 AND "CheckInDate" + "NumberOfBooking" - 1 > p_new_checkin_date + p_new_number_of_booking)
-      );
+    -- Get the old values of the booking
+    SELECT CheckInDate, PayType, NumberOfBooking
+    INTO v_old_checkin_date, v_old_pay_type, v_old_number_of_booking
+    FROM BOOKING
+    WHERE BookingID = p_booking_id;
 
-    IF v_existing_booking_id IS NULL THEN
-        -- Update the existing booking
-        UPDATE public."BOOKING"
-        SET
-            "CheckInDate" = p_new_checkin_date,
-            "PayType" = p_new_pay_type,
-            "NumberOfBooking" = p_new_number_of_booking
-        WHERE "BookingID" = p_booking_id;
-
-        RAISE NOTICE 'Booking % updated for user %.', p_booking_id, p_user_name;
-    ELSE
-        RAISE EXCEPTION 'Booking overlaps with an existing booking.';
-    END IF;
+    -- Update the booking with the new values if provided
+    UPDATE BOOKING
+    SET 
+        CheckInDate = COALESCE(p_new_checkin_date, v_old_checkin_date),
+        PayType = COALESCE(p_new_pay_type, v_old_pay_type),
+        NumberOfBooking = COALESCE(p_new_number_of_booking, v_old_number_of_booking)
+    WHERE BookingID = p_booking_id;
 END;
 $$;
+CALL public.user_edit_booking('john.doe@example.com', 'password123', 1, '2024-03-10', 'Credit Card', 2);

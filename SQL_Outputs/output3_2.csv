@@ -1,0 +1,2 @@
+"roomid","hotelname","branchname","locations","roomdecor","accessibilityfeatures","roomtype","roomview","buildingfloor","bathroom","bedconfiguration","services","roomsize","wifi","maxpeople","smoking","facility","measure","transportation","marketingstrategy","technology"
+1,"Sample Hotel","Main Branch","City Center","Modern","Free Wi-Fi","Standard","City View","5th Floor","Private","Double Bed","Cleaning Service",30,True,2,False,NULL,NULL,NULL,NULL,NULL

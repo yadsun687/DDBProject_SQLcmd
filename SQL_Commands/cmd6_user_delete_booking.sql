@@ -1,47 +1,62 @@
-CREATE OR REPLACE PROCEDURE user_delete_booking(
-    p_user_name VARCHAR(100),
+CREATE OR REPLACE Procedure public.user_delete_booking(
+    p_user_email VARCHAR(100),
     p_user_password VARCHAR(100),
     p_booking_id INTEGER
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    user_id INTEGER;
+    v_user_id INTEGER;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
 BEGIN
-    -- Check if the user exists and the password is correct
-    SELECT "UserID" INTO user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-      AND "UserPassword" = p_user_password;
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
-    -- Check if user_id exists in Normal_user table
-    IF NOT EXISTS (
-        SELECT 1
-        FROM public."NORMAL_USER"
-        WHERE "UserID(NORMAL_USER)" = user_id
-    ) THEN
-        RAISE EXCEPTION 'User does not exist in Normal_user table.';
+    -- Get the last login and logout IDs for the user
+    SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    SELECT MAX(CASE WHEN logout IS NOT NULL THEN logid END) INTO last_logout_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    -- Check if the user is currently logged in
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
     END IF;
 
-    -- Check if the user has logged in today
-    IF (SELECT "RecentLogin" FROM public."ALL_USER" WHERE "UserID" = user_id) <> CURRENT_DATE THEN
-        RAISE EXCEPTION 'User has not logged in today.';
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
 
-    -- Check if the booking belongs to the user
+    -- Check if the booking exists
     IF NOT EXISTS (
         SELECT 1
-        FROM public."BOOKING" b
-        WHERE b."UserID(BOOKING)" = user_id
-          AND b."BookingID" = p_booking_id
+        FROM public.BOOKING
+        WHERE BookingID = p_booking_id
     ) THEN
-        RAISE EXCEPTION 'Booking does not belong to the user.';
+        RAISE EXCEPTION 'Booking not found with the given ID';
+    END IF;
+
+    -- Check if the user owns the booking
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING b
+        JOIN public.ALL_USER u ON b.UserID = u.UserID
+        WHERE b.BookingID = p_booking_id AND u.UserEmail = p_user_email
+    ) THEN
+        RAISE EXCEPTION 'User does not own the booking with the given ID';
     END IF;
 
     -- Delete the booking
-    DELETE FROM public."BOOKING"
-    WHERE "BookingID" = p_booking_id;
-
-    RAISE NOTICE 'Booking % deleted for user %.', p_booking_id, p_user_name;
+    DELETE FROM public.BOOKING
+    WHERE BookingID = p_booking_id;
 END;
 $$;
+
+CALL public.user_delete_booking('john.doe@example.com', 'password123', 1);

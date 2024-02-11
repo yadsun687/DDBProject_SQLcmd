@@ -1,0 +1,2 @@
+bookingid,userid,roomid,checkindate,paytype,numberofbooking
+2,1,1,1/3/2034,Credit Card,1

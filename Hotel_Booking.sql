@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-02-07 06:48:35 UTC
+-- Started on 2024-02-06 16:15:29 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,343 +19,348 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 4 (class 2615 OID 2200)
--- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+-- TOC entry 252 (class 1255 OID 49287)
+-- Name: admins_delete_bookings(character varying, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO pg_database_owner;
-
---
--- TOC entry 3515 (class 0 OID 0)
--- Dependencies: 4
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
---
-
-COMMENT ON SCHEMA public IS 'standard public schema';
-
-
---
--- TOC entry 872 (class 1247 OID 57803)
--- Name: LoginType; Type: TYPE; Schema: public; Owner: root
---
-
-CREATE TYPE public."LoginType" AS ENUM (
-    'LOGIN',
-    'LOGOUT'
-);
-
-
-ALTER TYPE public."LoginType" OWNER TO root;
-
---
--- TOC entry 252 (class 1255 OID 58000)
--- Name: admin_delete_booking(character varying, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
---
-
-CREATE PROCEDURE public.admin_delete_booking(IN p_user_name character varying, IN p_user_password character varying, IN p_booking_id integer)
+CREATE PROCEDURE public.admins_delete_bookings(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer)
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    user_id INTEGER;
+    v_user_id INTEGER;
 BEGIN
-    -- Check if the user exists and the password is correct
-    SELECT "UserID" INTO user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-      AND "UserPassword" = p_user_password;
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
-    -- Check if user_id exists in ADMIN table
-    IF NOT EXISTS (
-        SELECT 1
-        FROM public."ADMIN"
-        WHERE "UserID(ADMIN)" = user_id
-    ) THEN
-        RAISE EXCEPTION 'User does not exist in ADMIN table.';
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
 
-    -- Check if the booking belongs to the user
+    -- Check if the user is an admin
     IF NOT EXISTS (
         SELECT 1
-        FROM public."ADMIN_BOOKING" AB
-        WHERE AB."UserID(ADMIN)" = user_id
-          AND AB."BookingID" = p_booking_id
+        FROM public.admins
+        WHERE UserID = v_user_id
     ) THEN
-        RAISE EXCEPTION 'Booking does not belong to the user.';
+        RAISE EXCEPTION 'User found, but not an admin';
+    END IF;
+
+    -- Check if the booking exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE BookingID = p_booking_id
+    ) THEN
+        RAISE EXCEPTION 'Booking not found with the given ID';
     END IF;
 
     -- Delete the booking
-    DELETE FROM public."BOOKING"
-    WHERE "BookingID" = p_booking_id;
-
-    RAISE NOTICE 'Booking % deleted for admin user %.', p_booking_id, p_user_name;
+    DELETE FROM public.BOOKING
+    WHERE BookingID = p_booking_id;
 END;
 $$;
 
 
-ALTER PROCEDURE public.admin_delete_booking(IN p_user_name character varying, IN p_user_password character varying, IN p_booking_id integer) OWNER TO root;
+ALTER PROCEDURE public.admins_delete_bookings(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer) OWNER TO root;
 
 --
--- TOC entry 253 (class 1255 OID 58001)
--- Name: admin_edit_booking(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
+-- TOC entry 253 (class 1255 OID 49286)
+-- Name: admins_edit_bookings(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
-CREATE PROCEDURE public.admin_edit_booking(IN p_admin_name character varying, IN p_admin_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer)
+CREATE PROCEDURE public.admins_edit_bookings(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date DEFAULT NULL::date, IN p_new_pay_type character varying DEFAULT NULL::character varying, IN p_new_number_of_booking integer DEFAULT NULL::integer)
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    v_admin_id INTEGER;
-    v_room_status BOOLEAN;
-    v_existing_booking_id INTEGER;
+    v_user_id INTEGER;
 BEGIN
-    -- Assuming "UserName" is unique for admins
-    SELECT "UserID"
-    INTO v_admin_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_admin_name
-    AND "UserPassword" = p_admin_password;
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
-    IF v_admin_id IS NOT NULL THEN
-        -- Check if the booking exists
-        SELECT "BookingID"
-        INTO v_existing_booking_id
-        FROM public."BOOKING"
-        WHERE "BookingID" = p_booking_id;
-
-        IF v_existing_booking_id IS NOT NULL THEN
-            -- Check if the room status is true
-            SELECT "Status"
-            INTO v_room_status
-            FROM public."ROOM"
-            WHERE "RoomID" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id);
-
-            IF v_room_status THEN
-                -- Check for overlapping bookings for the same room
-                SELECT "BookingID"
-                INTO v_existing_booking_id
-                FROM public."BOOKING"
-                WHERE "RoomID(BOOKING)" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id)
-                AND NOT(
-                    ("CheckInDate" < p_new_checkin_date AND "CheckInDate" + p_new_number_of_booking - 1 < p_new_checkin_date)
-                    OR
-                    ("CheckInDate" > p_new_checkin_date + p_new_number_of_booking - 1 AND "CheckInDate" + p_new_number_of_booking - 1 > p_new_checkin_date + p_new_number_of_booking)
-                );
-
-                IF v_existing_booking_id IS NULL THEN
-                    -- Update the existing booking
-                    UPDATE public."BOOKING"
-                    SET "CheckInDate" = p_new_checkin_date,
-                        "PayType" = p_new_pay_type,
-                        "NumberOfBooking" = p_new_number_of_booking
-                    WHERE "BookingID" = p_booking_id;
-
-                    RAISE NOTICE 'Booking % updated by admin %.', p_booking_id, p_admin_name;
-                ELSE
-                    RAISE EXCEPTION 'New booking dates overlap with an existing booking.';
-                END IF;
-            ELSE
-                RAISE EXCEPTION 'Room status is not available';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'Booking does not exist.';
-        END IF;
-    ELSE
-        RAISE EXCEPTION 'Admin not found with the given credentials';
-    END IF;
-END;
-$$;
-
-
-ALTER PROCEDURE public.admin_edit_booking(IN p_admin_name character varying, IN p_admin_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer) OWNER TO root;
-
---
--- TOC entry 236 (class 1255 OID 57995)
--- Name: admin_view_bookings(); Type: FUNCTION; Schema: public; Owner: root
---
-
-CREATE FUNCTION public.admin_view_bookings() RETURNS TABLE("BookingID" integer, "UserID" integer, "UserName" character varying, "UserPassword" character varying, "UserEmail" character varying, "RecentLogin" date, "RoomID" integer, "CheckInDate" date, "PayType" character varying, "NumberOfBooking" integer, "HotelName" character varying, "BranchName" character varying, "Location" character varying, "RoomDecor" character varying, "Accessibility Features" character varying, "RoomType" character varying, "View" character varying, "Building/Floor" character varying, "Bathroom" character varying, "BedConfiguration" character varying, "Services" character varying, "RoomSize" integer, "Wi-Fi" boolean, "MaxPeople" integer, "Smoking" boolean, "Facility" character varying, "Measure" character varying, "Transportation" character varying, "BranchTelephone" character varying, "MarketingStrategy" character varying, "Technology" character varying)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    RETURN QUERY
-    SELECT *
-    FROM view_bookings;
-END;
-$$;
-
-
-ALTER FUNCTION public.admin_view_bookings() OWNER TO root;
-
---
--- TOC entry 237 (class 1255 OID 57996)
--- Name: create_login_log(integer, public."LoginType", date); Type: FUNCTION; Schema: public; Owner: root
---
-
-CREATE FUNCTION public.create_login_log(user_id integer, login_type public."LoginType", login_date_time date) RETURNS void
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-	INSERT INTO public."LoginLog"("Type", "Date-time", "UserID")
-	VALUES (login_type, CURRENT_DATE, user_id);
-END;	
-$$;
-
-
-ALTER FUNCTION public.create_login_log(user_id integer, login_type public."LoginType", login_date_time date) OWNER TO root;
-
---
--- TOC entry 249 (class 1255 OID 57997)
--- Name: insert_booking_with_user_and_room(character varying, character varying, integer, date, character varying, integer); Type: FUNCTION; Schema: public; Owner: root
---
-
-CREATE FUNCTION public.insert_booking_with_user_and_room(p_user_name character varying, p_user_password character varying, p_room_id integer, p_checkin_date date, p_pay_type character varying, p_number_of_booking integer) RETURNS integer
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    v_user_id integer;
-    v_normal_user_id integer;
-    v_room_status boolean;
-    v_existing_booking_id integer;
-    v_new_booking_id integer; -- Variable to hold the new booking_id
-BEGIN
-    -- Assuming "UserName" is unique
-    SELECT "UserID"
-    INTO v_user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-    AND "UserPassword" = p_user_password;
-
-    IF v_user_id IS NOT NULL THEN
-        -- Check if the user is also in NORMAL_USER table
-        SELECT "UserID(NORMAL_USER)"
-        INTO v_normal_user_id
-        FROM public."NORMAL_USER"
-        WHERE "UserID(NORMAL_USER)" = v_user_id;
-
-        IF v_normal_user_id IS NOT NULL THEN
-            -- Check if the room status is true
-            SELECT "Status"
-            INTO v_room_status
-            FROM public."ROOM"
-            WHERE "RoomID" = p_room_id;
-
-            IF v_room_status THEN
-                -- Check for overlapping bookings for the same room
-                SELECT "BookingID"
-                INTO v_existing_booking_id
-                FROM public."BOOKING"
-                WHERE "RoomID(BOOKING)" = p_room_id
-                AND NOT(
-                    ("CheckInDate" < p_checkin_date AND "CheckInDate" + "NumberOfBooking"-1 < p_checkin_date)
-                    OR
-                    ("CheckInDate" > p_checkin_date + p_number_of_booking -1 AND "CheckInDate" + "NumberOfBooking"-1 > p_checkin_date + p_number_of_booking)
-                );
-
-                IF v_existing_booking_id IS NULL THEN
-                    -- Get the maximum existing booking_id and increment by 1
-                    SELECT COALESCE(MAX("BookingID"), 0) + 1
-                    INTO v_new_booking_id
-                    FROM public."BOOKING";
-
-                    -- Insert the new booking
-                    INSERT INTO public."BOOKING"("BookingID", "UserID(BOOKING)", "RoomID(BOOKING)", "CheckInDate", "PayType", "NumberOfBooking")
-                    VALUES (v_new_booking_id, v_user_id, p_room_id, p_checkin_date, p_pay_type, p_number_of_booking);
-
-                    -- Return the new booking_id
-                    RETURN v_new_booking_id;
-                ELSE
-                    RAISE EXCEPTION 'Booking already exists for the given room, checkin_date, and number_of_booking';
-                END IF;
-            ELSE
-                RAISE EXCEPTION 'Room status is not available';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'User found, but not a normal user';
-        END IF;
-    ELSE
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
         RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
+
+    -- Check if the user is an admin
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.admins
+        WHERE UserID = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User found, but not an admin';
+    END IF;
+
+    -- Check if the booking exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM BOOKING
+        WHERE BookingID = p_booking_id
+    ) THEN
+        RAISE EXCEPTION 'Booking not found';
+    END IF;
+
+    -- Update the booking with the new values if provided
+    UPDATE BOOKING
+    SET 
+        CheckInDate = COALESCE(p_new_checkin_date, CheckInDate),
+        PayType = COALESCE(p_new_pay_type, PayType),
+        NumberOfBooking = COALESCE(p_new_number_of_booking, NumberOfBooking)
+    WHERE BookingID = p_booking_id;
 END;
 $$;
 
 
-ALTER FUNCTION public.insert_booking_with_user_and_room(p_user_name character varying, p_user_password character varying, p_room_id integer, p_checkin_date date, p_pay_type character varying, p_number_of_booking integer) OWNER TO root;
+ALTER PROCEDURE public.admins_edit_bookings(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer) OWNER TO root;
 
 --
--- TOC entry 254 (class 1255 OID 58002)
+-- TOC entry 251 (class 1255 OID 49284)
+-- Name: admins_view_all_bookings(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
+--
+
+CREATE FUNCTION public.admins_view_all_bookings(p_user_email character varying, p_user_password character varying) RETURNS TABLE(bookingid integer, userid integer, checkindate date, paytype character varying, numberofbooking integer, roomid integer, hotelid integer, hotelname character varying, branchid integer, branchname character varying, branch_location character varying, decorandtheme character varying, rating_reviews integer, parkingavailability boolean, parkingtypeparking character varying, parkingcostparking integer, roomdecor character varying, accessibilityfeatures character varying, roomtype character varying, roomview character varying, buildingfloor character varying, bathroom character varying, bedconfiguration character varying, services character varying, roomsize integer, wifi boolean, maxpeople integer, smoking boolean, facility character varying, measure character varying, transportation character varying, marketingstrategy character varying, technology character varying)
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_user_id INTEGER;
+BEGIN
+    -- Check if the user exists and the password is correct
+    SELECT all_user.userid INTO v_user_id
+    FROM public.all_user
+    WHERE all_user.useremail = p_user_email AND all_user.userpassword = p_user_password;
+
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'Invalid email or password.';
+    END IF;
+
+    -- Check if the user is in the admins table
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.admins
+        WHERE admins.userid = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User is not an admin.';
+    END IF;
+
+    -- Return booking details
+    RETURN QUERY
+    SELECT
+        b.bookingid,
+        b.userid,
+        b.checkindate,
+        b.paytype,
+        b.numberofbooking,
+        r.roomid,
+        h.hotelid,
+        h.hotelname,
+        hb.branchid,
+        hb.branchname,
+        hb.branch_location,
+        hb.decorandtheme,
+        hb.rating_reviews,
+        hb.parkingavailability,
+        hb.parkingtypeparking,
+        hb.parkingcostparking,
+        d.roomdecor,
+        da.amentities AS accessibilityfeatures,
+        d.roomtype,
+        d.roomview,
+        d.building_floor AS buildingfloor,
+        d.bathroom,
+        d.bedconfiguration,
+        d.services,
+        d.roomsize,
+        d.wifi,
+        d.maxpeople,
+        d.smoking,
+        bf.facility,
+        sm.measure,
+        tr.transportation,
+        ms.strategy AS marketingstrategy,
+        tech.technology
+    FROM 
+        public.booking b
+    JOIN 
+        public.room r ON b.roomid = r.roomid
+    JOIN 
+        public.details d ON r.detailsid = d.detailsid
+    JOIN 
+        public.details_amentities da ON d.detailsid = da.detailsid
+    JOIN 
+        public.hotel_branch hb ON r.branchid = hb.branchid
+    JOIN 
+        public.hotel h ON hb.hotelid = h.hotelid
+    LEFT JOIN 
+        public.branch_facilities bf ON r.branchid = bf.branchid
+    LEFT JOIN 
+        public.branch_securitymeasures sm ON r.branchid = sm.branchid
+    LEFT JOIN 
+        public.branch_transportation tr ON r.branchid = tr.branchid
+    LEFT JOIN 
+        public.hotel_marketingstrategy ms ON hb.hotelid = ms.hotelid
+    LEFT JOIN 
+        public.hotel_technology tech ON hb.hotelid = tech.hotelid;
+END;
+$$;
+
+
+ALTER FUNCTION public.admins_view_all_bookings(p_user_email character varying, p_user_password character varying) OWNER TO root;
+
+--
+-- TOC entry 247 (class 1255 OID 41727)
+-- Name: insert_booking_with_user_and_room(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
+--
+
+CREATE PROCEDURE public.insert_booking_with_user_and_room(IN p_user_email character varying, IN p_user_password character varying, IN p_room_id integer, IN p_checkin_date date, IN p_pay_type character varying, IN p_number_of_booking integer)
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_user_id INTEGER;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
+    v_booking_id INTEGER;
+BEGIN
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
+
+    -- Get the last login and logout IDs for the user
+    SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    SELECT MAX(CASE WHEN logout IS NOT NULL THEN logid END) INTO last_logout_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    -- Check if the user is currently logged in
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
+    END IF;
+
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
+    END IF;
+
+    -- Check if the user is a normal user
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.NORMAL_USER
+        WHERE UserID = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User found, but not a normal user';
+    END IF;
+
+    -- Check if the room is available
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.ROOM
+        WHERE RoomID = p_room_id AND Status = TRUE
+    ) THEN
+        RAISE EXCEPTION 'Room status is not available';
+    END IF;
+
+    -- Check if a conflicting booking already exists
+    IF EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE RoomID = p_room_id
+          AND NOT (
+            (CheckInDate < p_checkin_date AND CheckInDate + NumberOfBooking - 1 < p_checkin_date)
+            OR
+            (CheckInDate > p_checkin_date + p_number_of_booking - 1 AND CheckInDate > p_checkin_date + p_number_of_booking - 1)
+          )
+    ) THEN
+        RAISE EXCEPTION 'Booking already exists for the given room, checkin_date, and number_of_booking';
+    END IF;
+
+    -- Get the maximum existing booking_id and increment by 1
+    SELECT COALESCE(MAX(BookingID), 0) + 1 INTO v_booking_id FROM public.BOOKING;
+
+    -- Insert the booking
+    INSERT INTO public.BOOKING (BookingID, RoomID, UserID, CheckInDate, PayType, NumberOfBooking)
+    VALUES (v_booking_id, p_room_id, v_user_id, p_checkin_date, p_pay_type, p_number_of_booking);
+END;
+$$;
+
+
+ALTER PROCEDURE public.insert_booking_with_user_and_room(IN p_user_email character varying, IN p_user_password character varying, IN p_room_id integer, IN p_checkin_date date, IN p_pay_type character varying, IN p_number_of_booking integer) OWNER TO root;
+
+--
+-- TOC entry 248 (class 1255 OID 41724)
 -- Name: login_user(character varying, character varying); Type: PROCEDURE; Schema: public; Owner: root
 --
 
-CREATE PROCEDURE public.login_user(IN p_user_name character varying, IN p_user_password character varying)
+CREATE PROCEDURE public.login_user(IN p_user_email character varying, IN p_user_password character varying)
     LANGUAGE plpgsql
     AS $$
 DECLARE
     user_id INTEGER;
 BEGIN
-    -- Find the user ID based on the provided username and password
-    SELECT "UserID" INTO user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name AND "UserPassword" = p_user_password;
+    -- Find the user ID and the last logout timestamp based on the provided email and password
+    SELECT AU.userID INTO user_id
+    FROM ALL_USER AS AU
+    WHERE AU.Useremail = p_user_email AND AU.UserPassword = p_user_password;
 
-    -- If the user is found, update the RecentLogin field to today's date
-    IF user_id IS NOT NULL THEN
-        UPDATE public."ALL_USER"
-        SET "RecentLogin" = CURRENT_DATE
-        WHERE "UserID" = user_id;
-
-        RAISE NOTICE 'User logged in with UserID: %', user_id;
-
-        -- Call the create_login_log function after a successful login
-        PERFORM create_login_log(user_id, 'LOGIN', CURRENT_DATE);
-
+    IF user_id IS NOT NULL AND user_id IN (SELECT userid FROM normal_user) AND user_id NOT IN (SELECT userid FROM logs WHERE logout IS NULL) THEN
+        -- Insert log entry
+        INSERT INTO logs(logid, login, logout, userid)
+        VALUES (COALESCE((SELECT MAX(logid) + 1 FROM logs), 1), CURRENT_TIMESTAMP, NULL, user_id)
+        RETURNING user_id INTO user_id;
+        -- Raise a NOTICE with the user_id for successful login
+        RAISE NOTICE 'User with email % logged in successfully. UserID: %', p_user_email, user_id;
     ELSE
-        RAISE NOTICE 'Login failed. User not found or incorrect credentials.';
+        -- Raise an exception for unsuccessful login
+        RAISE EXCEPTION 'Invalid email or password, or user is not a normal user, or already logged in';
     END IF;
 END;
 $$;
 
 
-ALTER PROCEDURE public.login_user(IN p_user_name character varying, IN p_user_password character varying) OWNER TO root;
+ALTER PROCEDURE public.login_user(IN p_user_email character varying, IN p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 255 (class 1255 OID 58003)
+-- TOC entry 246 (class 1255 OID 41725)
 -- Name: logout_user(character varying, character varying); Type: PROCEDURE; Schema: public; Owner: root
 --
 
-CREATE PROCEDURE public.logout_user(IN p_user_name character varying, IN p_user_password character varying)
+CREATE PROCEDURE public.logout_user(IN p_user_email character varying, IN p_user_password character varying)
     LANGUAGE plpgsql
     AS $$
 DECLARE
     user_id INTEGER;
 BEGIN
-    -- Find the user ID based on the provided username and password
-    SELECT "UserID" INTO user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name AND "UserPassword" = p_user_password;
+    -- Find the user ID and the last logout timestamp based on the provided email and password
+    SELECT AU.userID INTO user_id
+    FROM ALL_USER AS AU
+    WHERE AU.Useremail = p_user_email AND AU.UserPassword = p_user_password;
 
-    -- If the user is found, update the RecentLogin field to '0001-01-01'
-    IF user_id IS NOT NULL THEN
-        UPDATE public."ALL_USER"
-        SET "RecentLogin" = '0001-01-01'::DATE
-        WHERE "UserID" = user_id;
-
-		 -- Call the create_login_log function after a user logout
-        PERFORM create_login_log(user_id, 'LOGOUT', CURRENT_DATE);
-		
-        RAISE NOTICE 'User logged out with UserID: %', user_id;
+    IF user_id IS NOT NULL AND user_id IN (SELECT userid FROM normal_user) AND user_id IN (SELECT userid FROM logs WHERE logout IS NULL) THEN
+        UPDATE logs
+        SET logout = CURRENT_TIMESTAMP
+        WHERE userid = user_id AND logout IS NULL
+        RETURNING user_id INTO user_id;
+        -- Raise a NOTICE with the user_id for successful logout
+        RAISE NOTICE 'User with email % logged out successfully. UserID: %', p_user_email, user_id;
     ELSE
-        RAISE NOTICE 'Logout failed. User not found or incorrect credentials.';
+        -- Raise an exception for unsuccessful logout
+        RAISE EXCEPTION 'Invalid email or password, or user is not a normal user, or already logged out';
     END IF;
 END;
 $$;
 
 
-ALTER PROCEDURE public.logout_user(IN p_user_name character varying, IN p_user_password character varying) OWNER TO root;
+ALTER PROCEDURE public.logout_user(IN p_user_email character varying, IN p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 256 (class 1255 OID 58004)
+-- TOC entry 245 (class 1255 OID 41694)
 -- Name: register_all_user(character varying, character varying, character varying, character varying[], date, character varying[], character varying[]); Type: PROCEDURE; Schema: public; Owner: root
 --
 
@@ -367,63 +372,68 @@ DECLARE
     role VARCHAR;
     i INTEGER;
 BEGIN
-    -- Check for uniqueness of username, email, and password
+    -- Check for uniqueness of email and password
     IF EXISTS (
         SELECT 1
-        FROM public."ALL_USER"
-        WHERE "UserName" = p_user_name
-           AND "UserPassword" = p_user_password
+        FROM ALL_USER
+        WHERE UserEmail = p_user_email
+           AND UserPassword = p_user_password
     ) THEN
-        RAISE EXCEPTION 'User with the same username, email, or password already exists.';
+        RAISE EXCEPTION 'User with the same email and password already exists.';
     END IF;
 
     -- Generate a new UserID
-    SELECT COALESCE(MAX("UserID"), 0) + 1 INTO new_user_id FROM public."ALL_USER";
+    SELECT COALESCE(MAX(UserID), 0) + 1 INTO new_user_id FROM ALL_USER;
 
     -- Insert the new user into the ALL_USER table
-    INSERT INTO public."ALL_USER"("UserID", "UserPassword", "UserName", "UserEmail", "RecentLogin")
-    VALUES (new_user_id, p_user_password, p_user_name, p_user_email, '0001-01-01');
+    INSERT INTO ALL_USER(UserID, UserPassword, UserName, UserEmail)
+    VALUES (new_user_id, p_user_password, p_user_name, p_user_email);
 
     -- Iterate through the roles and insert the user into corresponding role tables
     FOREACH role IN ARRAY p_role_type
     LOOP
-        IF role = 'NORMAL' THEN
-            INSERT INTO public."NORMAL_USER"("UserID(NORMAL_USER)", "BirthDate")
-            VALUES (new_user_id, p_BirthDate);
+        CASE role
+            WHEN 'NORMAL' THEN
+                INSERT INTO NORMAL_USER(UserID, BirthDate)
+                VALUES (new_user_id, p_BirthDate);
 
-            -- Use loop to INSERT NormalUser_Address only if it doesn't already exist
-            FOR i IN 1..array_length(NormalUser_Address, 1)
-            LOOP
-                BEGIN
-                    INSERT INTO public."NormalUser_Address"("UserID(NormalUser_Address)", "UserAddress")
-                    VALUES (new_user_id, NormalUser_Address[i]);
-                EXCEPTION
-                    WHEN unique_violation THEN
-                        -- Ignore duplicate entries
-                        CONTINUE;
-                END;
-            END LOOP;
+                -- Use loop to INSERT NormalUser_Address only if it doesn't already exist
+                FOR i IN 1..COALESCE(array_length(NormalUser_Address, 1), 0)
+                LOOP
+                    BEGIN
+                        INSERT INTO NormalUser_Address(UserID, UserAddress)
+                        VALUES (new_user_id, NormalUser_Address[i]);
+                    EXCEPTION
+                        WHEN unique_violation THEN
+                            -- Ignore duplicate entries
+                            CONTINUE;
+                    END;
+                END LOOP;
 
-            -- Use loop to INSERT NormalUser_Telephone only if it doesn't already exist
-            FOR i IN 1..array_length(NormalUser_Telephone, 1)
-            LOOP
-                BEGIN
-                    INSERT INTO public."NormalUser_Telephone"("UserID(NormalUser_Telephone)", "UserTelephone")
-                    VALUES (new_user_id, NormalUser_Telephone[i]);
-                EXCEPTION
-                    WHEN unique_violation THEN
-                        -- Ignore duplicate entries
-                        CONTINUE;
-                END;
-            END LOOP;
-            
-        ELSIF role = 'ADMIN' THEN
-            INSERT INTO public."ADMIN"("UserID(ADMIN)")
-            VALUES (new_user_id);
-        ELSIF role = 'MANAGER' THEN
-            INSERT INTO public."HOTEL_MANAGER"("UserID(HOTEL_MANAGER)")
-            VALUES (new_user_id);
-        END IF;
+                -- Use loop to INSERT NormalUser_Telephone only if it doesn't already exist
+                FOR i IN 1..COALESCE(array_length(NormalUser_Telephone, 1), 0)
+                LOOP
+                    BEGIN
+                        INSERT INTO NormalUser_Telephone(UserID, UserTelephone)
+                        VALUES (new_user_id, NormalUser_Telephone[i]);
+                    EXCEPTION
+                        WHEN unique_violation THEN
+                            -- Ignore duplicate entries
+                            CONTINUE;
+                    END;
+                END LOOP;
+
+            WHEN 'ADMIN' THEN
+                INSERT INTO ADMINS(UserID)
+                VALUES (new_user_id);
+
+            WHEN 'MANAGER' THEN
+                INSERT INTO HOTEL_MANAGER(UserID)
+                VALUES (new_user_id);
+
+            ELSE
+                RAISE EXCEPTION 'Invalid role type: %', role;
+        END CASE;
     END LOOP;
 
     -- Raise a NOTICE with the new_user_id
@@ -435,1138 +445,1193 @@ $$;
 ALTER PROCEDURE public.register_all_user(IN p_user_password character varying, IN p_user_name character varying, IN p_user_email character varying, IN p_role_type character varying[], IN p_birthdate date, IN normaluser_address character varying[], IN normaluser_telephone character varying[]) OWNER TO root;
 
 --
--- TOC entry 257 (class 1255 OID 58005)
+-- TOC entry 255 (class 1255 OID 49278)
 -- Name: user_delete_booking(character varying, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
 --
 
-CREATE PROCEDURE public.user_delete_booking(IN p_user_name character varying, IN p_user_password character varying, IN p_booking_id integer)
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    user_id INTEGER;
-BEGIN
-    -- Check if the user exists and the password is correct
-    SELECT "UserID" INTO user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-      AND "UserPassword" = p_user_password;
-
-    -- Check if user_id exists in Normal_user table
-    IF NOT EXISTS (
-        SELECT 1
-        FROM public."NORMAL_USER"
-        WHERE "UserID(NORMAL_USER)" = user_id
-    ) THEN
-        RAISE EXCEPTION 'User does not exist in Normal_user table.';
-    END IF;
-
-    -- Check if the user has logged in today
-    IF (SELECT "RecentLogin" FROM public."ALL_USER" WHERE "UserID" = user_id) <> CURRENT_DATE THEN
-        RAISE EXCEPTION 'User has not logged in today.';
-    END IF;
-
-    -- Check if the booking belongs to the user
-    IF NOT EXISTS (
-        SELECT 1
-        FROM public."BOOKING" b
-        WHERE b."UserID(BOOKING)" = user_id
-          AND b."BookingID" = p_booking_id
-    ) THEN
-        RAISE EXCEPTION 'Booking does not belong to the user.';
-    END IF;
-
-    -- Delete the booking
-    DELETE FROM public."BOOKING"
-    WHERE "BookingID" = p_booking_id;
-
-    RAISE NOTICE 'Booking % deleted for user %.', p_booking_id, p_user_name;
-END;
-$$;
-
-
-ALTER PROCEDURE public.user_delete_booking(IN p_user_name character varying, IN p_user_password character varying, IN p_booking_id integer) OWNER TO root;
-
---
--- TOC entry 258 (class 1255 OID 58006)
--- Name: user_edit_booking(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
---
-
-CREATE PROCEDURE public.user_edit_booking(IN p_user_name character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer)
+CREATE PROCEDURE public.user_delete_booking(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer)
     LANGUAGE plpgsql
     AS $$
 DECLARE
     v_user_id INTEGER;
-    v_normal_user_id INTEGER;
-    v_room_status BOOLEAN;
-    v_existing_booking_id INTEGER;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
 BEGIN
-    -- Check if the user exists and the password is correct
-    SELECT "UserID"
-    INTO v_user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-      AND "UserPassword" = p_user_password;
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
+    -- Get the last login and logout IDs for the user
+    SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    SELECT MAX(CASE WHEN logout IS NOT NULL THEN logid END) INTO last_logout_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    -- Check if the user is currently logged in
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
+    END IF;
+
+    -- Check if the user is found
     IF v_user_id IS NULL THEN
-        RAISE EXCEPTION 'Invalid username or password.';
+        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
 
-    -- Check if the user is in the NORMAL_USER table
-    SELECT "UserID(NORMAL_USER)"
-    INTO v_normal_user_id
-    FROM public."NORMAL_USER"
-    WHERE "UserID(NORMAL_USER)" = v_user_id;
-
-    IF v_normal_user_id IS NULL THEN
-        RAISE EXCEPTION 'User is not a normal user.';
+    -- Check if the booking exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE BookingID = p_booking_id
+    ) THEN
+        RAISE EXCEPTION 'Booking not found with the given ID';
     END IF;
 
-    -- Check if the booking belongs to the user
-    SELECT "BookingID"
-    INTO v_existing_booking_id
-    FROM public."BOOKING" b
-    WHERE b."UserID(BOOKING)" = v_user_id
-      AND b."BookingID" = p_booking_id;
-
-    IF v_existing_booking_id IS NULL THEN
-        RAISE EXCEPTION 'Booking does not belong to the user.';
+    -- Check if the user owns the booking
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING b
+        JOIN public.ALL_USER u ON b.UserID = u.UserID
+        WHERE b.BookingID = p_booking_id AND u.UserEmail = p_user_email
+    ) THEN
+        RAISE EXCEPTION 'User does not own the booking with the given ID';
     END IF;
 
-    -- Check if the room status is true
-    SELECT "Status"
-    INTO v_room_status
-    FROM public."ROOM" r
-    WHERE r."RoomID" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id);
-
-    IF NOT v_room_status THEN
-        RAISE EXCEPTION 'Room status is not available.';
-    END IF;
-
-    -- Check for overlapping bookings for the same room
-    SELECT "BookingID"
-    INTO v_existing_booking_id
-    FROM public."BOOKING" b
-    WHERE b."RoomID(BOOKING)" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id)
-      AND b."BookingID" <> p_booking_id
-      AND NOT (
-          ("CheckInDate" < p_new_checkin_date AND "CheckInDate" + "NumberOfBooking" - 1 < p_new_checkin_date)
-          OR
-          ("CheckInDate" > p_new_checkin_date + p_new_number_of_booking - 1 AND "CheckInDate" + "NumberOfBooking" - 1 > p_new_checkin_date + p_new_number_of_booking)
-      );
-
-    IF v_existing_booking_id IS NULL THEN
-        -- Update the existing booking
-        UPDATE public."BOOKING"
-        SET
-            "CheckInDate" = p_new_checkin_date,
-            "PayType" = p_new_pay_type,
-            "NumberOfBooking" = p_new_number_of_booking
-        WHERE "BookingID" = p_booking_id;
-
-        RAISE NOTICE 'Booking % updated for user %.', p_booking_id, p_user_name;
-    ELSE
-        RAISE EXCEPTION 'Booking overlaps with an existing booking.';
-    END IF;
+    -- Delete the booking
+    DELETE FROM public.BOOKING
+    WHERE BookingID = p_booking_id;
 END;
 $$;
 
 
-ALTER PROCEDURE public.user_edit_booking(IN p_user_name character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer) OWNER TO root;
+ALTER PROCEDURE public.user_delete_booking(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer) OWNER TO root;
 
 --
--- TOC entry 250 (class 1255 OID 57998)
+-- TOC entry 250 (class 1255 OID 49277)
+-- Name: user_edit_booking(character varying, character varying, integer, date, character varying, integer); Type: PROCEDURE; Schema: public; Owner: root
+--
+
+CREATE PROCEDURE public.user_edit_booking(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date DEFAULT NULL::date, IN p_new_pay_type character varying DEFAULT NULL::character varying, IN p_new_number_of_booking integer DEFAULT NULL::integer)
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_user_id INTEGER;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
+    v_old_checkin_date DATE;
+    v_old_pay_type VARCHAR(100);
+    v_old_number_of_booking INTEGER;
+BEGIN
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
+
+    -- Get the last login and logout IDs for the user
+    SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    SELECT MAX(CASE WHEN logout IS NOT NULL THEN logid END) INTO last_logout_id
+    FROM public.LOGS
+    WHERE UserID = v_user_id;
+
+    -- Check if the user is currently logged in
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
+    END IF;
+
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
+    END IF;
+
+    -- Check if the user is a normal user
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.NORMAL_USER
+        WHERE UserID = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User found, but not a normal user';
+    END IF;
+
+    -- Check if the booking exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE BookingID = p_booking_id
+    ) THEN
+        RAISE EXCEPTION 'Booking not found with the given ID';
+    END IF;
+
+    -- Check if the user owns the booking
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.BOOKING b
+        JOIN public.ALL_USER u ON b.UserID = u.UserID
+        WHERE b.BookingID = p_booking_id AND u.UserEmail = p_user_email  AND u.userpassword = p_user_password
+    ) THEN
+        RAISE EXCEPTION 'User does not own the booking with the given ID';
+    END IF;
+
+    -- Get the old values of the booking
+    SELECT CheckInDate, PayType, NumberOfBooking
+    INTO v_old_checkin_date, v_old_pay_type, v_old_number_of_booking
+    FROM BOOKING
+    WHERE BookingID = p_booking_id;
+
+    -- Update the booking with the new values if provided
+    UPDATE BOOKING
+    SET 
+        CheckInDate = COALESCE(p_new_checkin_date, v_old_checkin_date),
+        PayType = COALESCE(p_new_pay_type, v_old_pay_type),
+        NumberOfBooking = COALESCE(p_new_number_of_booking, v_old_number_of_booking)
+    WHERE BookingID = p_booking_id;
+END;
+$$;
+
+
+ALTER PROCEDURE public.user_edit_booking(IN p_user_email character varying, IN p_user_password character varying, IN p_booking_id integer, IN p_new_checkin_date date, IN p_new_pay_type character varying, IN p_new_number_of_booking integer) OWNER TO root;
+
+--
+-- TOC entry 254 (class 1255 OID 41701)
 -- Name: user_view_all_room(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
 --
 
-CREATE FUNCTION public.user_view_all_room(p_user_name character varying, p_user_password character varying) RETURNS TABLE("RoomID" integer, "HotelName" character varying, "BranchName" character varying, "Location" character varying, "RoomDecor" character varying, "AccessibilityFeatures" character varying, "RoomType" character varying, "View" character varying, "BuildingFloor" character varying, "Bathroom" character varying, "BedConfiguration" character varying, "Services" character varying, "RoomSize" integer, "WiFi" boolean, "MaxPeople" integer, "Smoking" boolean, "Facility" character varying, "Measure" character varying, "Transportation" character varying, "MarketingStrategy" character varying, "Technology" character varying)
+CREATE FUNCTION public.user_view_all_room(p_user_email character varying, p_user_password character varying) RETURNS TABLE(roomid integer, hotelname character varying, branchname character varying, locations character varying, roomdecor character varying, accessibilityfeatures character varying, roomtype character varying, roomview character varying, buildingfloor character varying, bathroom character varying, bedconfiguration character varying, services character varying, roomsize integer, wifi boolean, maxpeople integer, smoking boolean, facility character varying, measure character varying, transportation character varying, marketingstrategy character varying, technology character varying)
     LANGUAGE plpgsql
     AS $$
 DECLARE
     user_id INTEGER;
-    is_today_recent_login BOOLEAN;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
 BEGIN
     -- Check if the user exists and the password is correct
-    SELECT "UserID"
-    INTO user_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_user_name
-      AND "UserPassword" = p_user_password;
+    SELECT UserID INTO user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
     IF user_id IS NULL THEN
-        RAISE EXCEPTION 'Invalid username or password.';
+        RAISE EXCEPTION 'Invalid email or password.';
     END IF;
 
     -- Check if the user is in the NORMAL_USER table
     IF NOT EXISTS (
         SELECT 1
-        FROM public."NORMAL_USER"
-        WHERE "UserID(NORMAL_USER)" = user_id
+        FROM public.NORMAL_USER
+        WHERE UserID = user_id
     ) THEN
         RAISE EXCEPTION 'User is not in NORMAL_USER table.';
     END IF;
 
-    -- Check if RecentLogin is today
-    SELECT true
-    INTO is_today_recent_login
-    FROM public."ALL_USER"
-    WHERE "UserID" = user_id
-      AND "RecentLogin" = CURRENT_DATE;
+    -- Retrieve the last login and logout logids for the user
+    SELECT 
+        MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
+    FROM public.LOGS
+    WHERE UserID = user_id;
 
-    IF NOT is_today_recent_login THEN
-        RAISE EXCEPTION 'RecentLogin is not today.';
+    SELECT 
+        MAX(CASE WHEN logout IS NOT NULL THEN logid END) INTO last_logout_id
+    FROM public.LOGS
+    WHERE UserID = user_id;
+
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
     END IF;
 
     -- Retrieve the user's bookings along with related information
     RETURN QUERY
     SELECT
-        r."RoomID",
-        h."HotelName",
-        hb."BranchName",
-        hb."Location",
-        d."RoomDecor",
-        d."Accessibility Features",
-        d."RoomType",
-        d."View",
-        d."Building/Floor",
-        d."Bathroom",
-        d."BedConfiguration",
-        d."Services",
-        d."RoomSize",
-        d."Wi-Fi",
-        d."MaxPeople",
-        d."Smoking",
-        bf."Facility",
-        sm."Measure",
-        tr."Transportation",
-        ms."Strategy" AS "MarketingStrategy",
-        tech."Technology"
-    FROM public."ROOM" r
-    JOIN public."DETAILS" d ON r."DetailsID(ROOM)" = d."DetailsID"
-    JOIN public."HOTEL_BRANCH" hb ON r."BranchID(ROOM)" = hb."BranchID"
-    JOIN public."HOTEL" h ON hb."HotelID(HOTEL_BRANCH)" = h."HotelID"
-    LEFT JOIN public."Branch_Facilities" bf ON r."BranchID(ROOM)" = bf."BranchID(Branch_Facilities)"
-	LEFT JOIN public."Branch_SecurityMeasures" sm ON r."BranchID(ROOM)" = sm."BranchID(Branch_SecurityMeasures)"
-	LEFT JOIN public."Branch_Transportation" tr ON r."BranchID(ROOM)" = tr."BranchID(Branch_Transportation)"
-	LEFT JOIN public."Branch_Telephone" tel ON r."BranchID(ROOM)" = tel."BranchID(Branch_Telephone)"
-	LEFT JOIN public."Hotel_MarketingStrategy" ms ON hb."HotelID(HOTEL_BRANCH)" = ms."HotelID(Hotel_MarketingStrategy)"
-	LEFT JOIN public."Hotel_Technology" tech ON hb."HotelID(HOTEL_BRANCH)" = tech."HotelID(Hotel_Technology)"
-    WHERE r."Status" = true;
+        r.RoomID,
+        h.HotelName,
+        hb.BranchName,
+        hb.Branch_Location AS Locations,
+        d.RoomDecor,
+        da.Amentities,
+        d.RoomType,
+        d.RoomView,
+        d.Building_Floor AS BuildingFloor,
+        d.Bathroom,
+        d.BedConfiguration,
+        d.Services,
+        d.RoomSize,
+        d.Wifi,
+        d.MaxPeople,
+        d.Smoking,
+        bf.Facility,
+        sm.Measure,
+        tr.Transportation,
+        ms.Strategy AS MarketingStrategy,
+        tech.Technology
+    FROM public.ROOM r
+    JOIN public.DETAILS d ON r.DetailsID = d.DetailsID
+	JOIN public.Details_Amentities da ON d.DetailsID = da.DetailsID
+    JOIN public.HOTEL_BRANCH hb ON r.BranchID = hb.BranchID
+    JOIN public.HOTEL h ON hb.HotelID = h.HotelID
+    LEFT JOIN public.BRANCH_FACILITIES bf ON r.BranchID = bf.BranchID
+    LEFT JOIN public.BRANCH_SECURITYMEASURES sm ON r.BranchID = sm.BranchID
+    LEFT JOIN public.BRANCH_TRANSPORTATION tr ON r.BranchID = tr.BranchID
+    LEFT JOIN public.BRANCH_TELEPHONE tel ON r.BranchID = tel.BranchID
+    LEFT JOIN public.HOTEL_MARKETINGSTRATEGY ms ON hb.HotelID = ms.HotelID
+    LEFT JOIN public.HOTEL_TECHNOLOGY tech ON hb.HotelID = tech.HotelID
+    WHERE r.Status = true;
 END;
 $$;
 
 
-ALTER FUNCTION public.user_view_all_room(p_user_name character varying, p_user_password character varying) OWNER TO root;
+ALTER FUNCTION public.user_view_all_room(p_user_email character varying, p_user_password character varying) OWNER TO root;
 
 --
--- TOC entry 251 (class 1255 OID 57999)
--- Name: user_view_bookings(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
+-- TOC entry 249 (class 1255 OID 49273)
+-- Name: user_view_his_booking(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
 --
 
-CREATE FUNCTION public.user_view_bookings(p_user_name character varying, p_user_password character varying) RETURNS TABLE("BookingID" integer, "UserID" integer, "UserName" character varying, "UserPassword" character varying, "UserEmail" character varying, "RecentLogin" date, "RoomID" integer, "CheckInDate" date, "PayType" character varying, "NumberOfBooking" integer, "HotelName" character varying, "BranchName" character varying, "Location" character varying, "RoomDecor" character varying, "Accessibility Features" character varying, "RoomType" character varying, "View" character varying, "Building/Floor" character varying, "Bathroom" character varying, "BedConfiguration" character varying, "Services" character varying, "RoomSize" integer, "Wi-Fi" boolean, "MaxPeople" integer, "Smoking" boolean, "Facility" character varying, "Measure" character varying, "Transportation" character varying, "BranchTelephone" character varying, "MarketingStrategy" character varying, "Technology" character varying)
+CREATE FUNCTION public.user_view_his_booking(p_user_email character varying, p_user_password character varying) RETURNS TABLE(bookingid integer, userid integer, checkindate date, paytype character varying, numberofbooking integer, roomid integer, hotelid integer, hotelname character varying, branchid integer, branchname character varying, branchlocation character varying, decorandtheme character varying, ratingreviews integer, parkingavailability boolean, parkingtypeparking character varying, parkingcostparking integer, roomdecor character varying, accessibilityfeatures character varying, roomtype character varying, roomview character varying, buildingfloor character varying, bathroom character varying, bedconfiguration character varying, services character varying, roomsize integer, wifi boolean, maxpeople integer, smoking boolean, facility character varying, measure character varying, transportation character varying, marketingstrategy character varying, technology character varying)
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    v_user_id INTEGER;
+    last_login_id INTEGER;
+    last_logout_id INTEGER;
 BEGIN
+    -- Check if the user exists and the password is correct
+    SELECT all_user.userid INTO v_user_id
+    FROM public.all_user
+    WHERE all_user.useremail = p_user_email AND all_user.userpassword = p_user_password;
+
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'Invalid email or password.';
+    END IF;
+
+    -- Check if the user is in the NORMAL_USER table
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.normal_user
+        WHERE normal_user.userid = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User is not in NORMAL_USER table.';
+    END IF;
+
+    -- Retrieve the last login and logout logids for the user
+    SELECT 
+        MAX(CASE WHEN logs.logout IS NULL THEN logs.logid END) INTO last_login_id
+    FROM public.logs
+    WHERE logs.userid = v_user_id;
+
+    SELECT 
+        MAX(CASE WHEN logs.logout IS NOT NULL THEN logs.logid END) INTO last_logout_id
+    FROM public.logs
+    WHERE logs.userid = v_user_id;
+
+    IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
+        RAISE EXCEPTION 'User is not currently logged in.';
+    END IF;
+
     RETURN QUERY
     SELECT
-        b."BookingID",
-        b."UserID(BOOKING)",
-        u."UserName",
-        u."UserPassword",
-        u."UserEmail",
-        u."RecentLogin",
-        b."RoomID(BOOKING)",
-        b."CheckInDate",
-        b."PayType",
-        b."NumberOfBooking",
-        h."HotelName",
-        hb."BranchName",
-        hb."Location",
-        d."RoomDecor",
-        d."Accessibility Features",
-        d."RoomType",
-        d."View",
-        d."Building/Floor",
-        d."Bathroom",
-        d."BedConfiguration",
-        d."Services",
-        d."RoomSize",
-        d."Wi-Fi",
-        d."MaxPeople",
-        d."Smoking",
-        bf."Facility",
-        sm."Measure",
-        tr."Transportation",
-        tel."BranchTelephone",
-        ms."Strategy" AS marketing_strategy,
-        tech."Technology"
-    FROM public."BOOKING" b
-    JOIN public."ROOM" r ON b."RoomID(BOOKING)" = r."RoomID"
-    JOIN public."DETAILS" d ON r."DetailsID(ROOM)" = d."DetailsID"
-    JOIN public."HOTEL_BRANCH" hb ON r."BranchID(ROOM)" = hb."BranchID"
-    JOIN public."HOTEL" h ON hb."HotelID(HOTEL_BRANCH)" = h."HotelID"
-    JOIN public."ALL_USER" u ON b."UserID(BOOKING)" = u."UserID"
-    LEFT JOIN public."Branch_Facilities" bf ON r."BranchID(ROOM)" = bf."BranchID(Branch_Facilities)"
-    LEFT JOIN public."Branch_SecurityMeasures" sm ON r."BranchID(ROOM)" = sm."BranchID(Branch_SecurityMeasures)"
-    LEFT JOIN public."Branch_Transportation" tr ON r."BranchID(ROOM)" = tr."BranchID(Branch_Transportation)"
-    LEFT JOIN public."Branch_Telephone" tel ON r."BranchID(ROOM)" = tel."BranchID(Branch_Telephone)"
-    LEFT JOIN public."Hotel_MarketingStrategy" ms ON hb."HotelID(HOTEL_BRANCH)" = ms."HotelID(Hotel_MarketingStrategy)"
-    LEFT JOIN public."Hotel_Technology" tech ON hb."HotelID(HOTEL_BRANCH)" = tech."HotelID(Hotel_Technology)"
-    WHERE u."UserName" = p_user_name AND u."UserPassword" = p_user_password;
+        b.bookingid,
+        b.userid,
+        b.checkindate,
+        b.paytype,
+        b.numberofbooking,
+        r.roomid,
+        h.hotelid,
+        h.hotelname,
+        hb.branchid,
+        hb.branchname,
+        hb.branch_location,
+        hb.decorandtheme,
+        hb.rating_reviews,
+        hb.parkingavailability,
+        hb.parkingtypeparking,
+        hb.parkingcostparking,
+        d.roomdecor,
+        da.amentities AS accessibilityfeatures,
+        d.roomtype,
+        d.roomview,
+        d.building_floor AS buildingfloor,
+        d.bathroom,
+        d.bedconfiguration,
+        d.services,
+        d.roomsize,
+        d.wifi,
+        d.maxpeople,
+        d.smoking,
+        bf.facility,
+        sm.measure,
+        tr.transportation,
+        ms.strategy AS marketingstrategy,
+        tech.technology
+    FROM 
+        public.booking b
+    JOIN 
+        public.room r ON b.roomid = r.roomid
+    JOIN 
+        public.details d ON r.detailsid = d.detailsid
+    JOIN 
+        public.details_amentities da ON d.detailsid = da.detailsid
+    JOIN 
+        public.hotel_branch hb ON r.branchid = hb.branchid
+    JOIN 
+        public.hotel h ON hb.hotelid = h.hotelid
+    LEFT JOIN 
+        public.branch_facilities bf ON r.branchid = bf.branchid
+    LEFT JOIN 
+        public.branch_securitymeasures sm ON r.branchid = sm.branchid
+    LEFT JOIN 
+        public.branch_transportation tr ON r.branchid = tr.branchid
+    LEFT JOIN 
+        public.hotel_marketingstrategy ms ON hb.hotelid = ms.hotelid
+    LEFT JOIN 
+        public.hotel_technology tech ON hb.hotelid = tech.hotelid
+    WHERE 
+        r.status = TRUE AND b.userid = v_user_id;
 
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'Invalid username or password.';
-    END IF;
 END;
 $$;
 
 
-ALTER FUNCTION public.user_view_bookings(p_user_name character varying, p_user_password character varying) OWNER TO root;
+ALTER FUNCTION public.user_view_his_booking(p_user_email character varying, p_user_password character varying) OWNER TO root;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- TOC entry 215 (class 1259 OID 57807)
--- Name: ADMIN; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 218 (class 1259 OID 41518)
+-- Name: admins; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."ADMIN" (
-    "UserID(ADMIN)" integer NOT NULL
+CREATE TABLE public.admins (
+    userid integer NOT NULL
 );
 
 
-ALTER TABLE public."ADMIN" OWNER TO root;
+ALTER TABLE public.admins OWNER TO root;
 
 --
--- TOC entry 216 (class 1259 OID 57812)
--- Name: ALL_USER; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 215 (class 1259 OID 41283)
+-- Name: all_user; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."ALL_USER" (
-    "UserID" integer NOT NULL,
-    "UserPassword" character varying(100),
-    "UserName" character varying(100),
-    "UserEmail" character varying(100),
-    "RecentLogin" date
+CREATE TABLE public.all_user (
+    userid integer NOT NULL,
+    userpassword character varying(100),
+    username character varying(100),
+    useremail character varying(100)
 );
 
 
-ALTER TABLE public."ALL_USER" OWNER TO root;
+ALTER TABLE public.all_user OWNER TO root;
 
 --
--- TOC entry 217 (class 1259 OID 57817)
--- Name: BOOKING; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 224 (class 1259 OID 41579)
+-- Name: booking; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."BOOKING" (
-    "BookingID" integer NOT NULL,
-    "UserID(BOOKING)" integer,
-    "RoomID(BOOKING)" integer,
-    "CheckInDate" date,
-    "PayType" character varying(100),
-    "NumberOfBooking" integer
+CREATE TABLE public.booking (
+    bookingid integer NOT NULL,
+    userid integer,
+    roomid integer,
+    checkindate date,
+    paytype character varying(100),
+    numberofbooking integer
 );
 
 
-ALTER TABLE public."BOOKING" OWNER TO root;
+ALTER TABLE public.booking OWNER TO root;
 
 --
--- TOC entry 218 (class 1259 OID 57822)
--- Name: Branch_Facilities; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 230 (class 1259 OID 41646)
+-- Name: branch_facilities; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Branch_Facilities" (
-    "BranchID(Branch_Facilities)" integer NOT NULL,
-    "Facility" character varying(100)
+CREATE TABLE public.branch_facilities (
+    branchid integer NOT NULL,
+    facility character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Branch_Facilities" OWNER TO root;
+ALTER TABLE public.branch_facilities OWNER TO root;
 
 --
--- TOC entry 219 (class 1259 OID 57827)
--- Name: Branch_SecurityMeasures; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 231 (class 1259 OID 41661)
+-- Name: branch_securitymeasures; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Branch_SecurityMeasures" (
-    "BranchID(Branch_SecurityMeasures)" integer,
-    "Measure" character varying(100)
+CREATE TABLE public.branch_securitymeasures (
+    branchid integer NOT NULL,
+    measure character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Branch_SecurityMeasures" OWNER TO root;
+ALTER TABLE public.branch_securitymeasures OWNER TO root;
 
 --
--- TOC entry 220 (class 1259 OID 57830)
--- Name: Branch_Telephone; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 233 (class 1259 OID 41684)
+-- Name: branch_telephone; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Branch_Telephone" (
-    "BranchID(Branch_Telephone)" integer,
-    "BranchTelephone" character varying(100)
+CREATE TABLE public.branch_telephone (
+    branchid integer NOT NULL,
+    branchtelephone character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Branch_Telephone" OWNER TO root;
+ALTER TABLE public.branch_telephone OWNER TO root;
 
 --
--- TOC entry 221 (class 1259 OID 57833)
--- Name: Branch_Transportation; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 232 (class 1259 OID 41674)
+-- Name: branch_transportation; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Branch_Transportation" (
-    "BranchID(Branch_Transportation)" integer,
-    "Transportation" character varying(100)
+CREATE TABLE public.branch_transportation (
+    branchid integer NOT NULL,
+    transportation character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Branch_Transportation" OWNER TO root;
+ALTER TABLE public.branch_transportation OWNER TO root;
 
 --
--- TOC entry 222 (class 1259 OID 57836)
--- Name: DETAILS; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 220 (class 1259 OID 41538)
+-- Name: details; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."DETAILS" (
-    "DetailsID" integer NOT NULL,
-    "RoomDecor" character varying(100),
-    "Accessibility Features" character varying(100),
-    "RoomType" character varying(100),
-    "View" character varying(100),
-    "Building/Floor" character varying(100),
-    "Bathroom" character varying(100),
-    "BedConfiguration" character varying(100),
-    "Services" character varying(100),
-    "RoomSize" integer,
-    "Wi-Fi" boolean,
-    "MaxPeople" integer,
-    "Smoking" boolean
+CREATE TABLE public.details (
+    detailsid integer NOT NULL,
+    roomdecor character varying(100),
+    accessibility_features character varying(100),
+    roomtype character varying(100),
+    roomview character varying(100),
+    building_floor character varying(100),
+    bathroom character varying(100),
+    bedconfiguration character varying(100),
+    services character varying(100),
+    roomsize integer,
+    wifi boolean,
+    maxpeople integer,
+    smoking boolean
 );
 
 
-ALTER TABLE public."DETAILS" OWNER TO root;
+ALTER TABLE public.details OWNER TO root;
 
 --
--- TOC entry 223 (class 1259 OID 57843)
--- Name: Details_Amentities; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 226 (class 1259 OID 41606)
+-- Name: details_amentities; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Details_Amentities" (
-    "DetailsID(Details_Amentities)" integer NOT NULL,
-    "Amentities" character varying(100)
+CREATE TABLE public.details_amentities (
+    detailsid integer NOT NULL,
+    amentities character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Details_Amentities" OWNER TO root;
+ALTER TABLE public.details_amentities OWNER TO root;
 
 --
--- TOC entry 224 (class 1259 OID 57848)
--- Name: HOTEL; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 221 (class 1259 OID 41545)
+-- Name: hotel; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."HOTEL" (
-    "HotelID" integer NOT NULL,
-    "UserID(HOTEL_MANAGER)" integer,
-    "HotelName" character varying(100),
-    "BrandIdentity" character varying(100)
+CREATE TABLE public.hotel (
+    hotelid integer NOT NULL,
+    userid integer,
+    hotelname character varying(100),
+    brandidentity character varying(100)
 );
 
 
-ALTER TABLE public."HOTEL" OWNER TO root;
+ALTER TABLE public.hotel OWNER TO root;
 
 --
--- TOC entry 225 (class 1259 OID 57853)
--- Name: HOTEL_BRANCH; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 222 (class 1259 OID 41555)
+-- Name: hotel_branch; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."HOTEL_BRANCH" (
-    "HotelID(HOTEL_BRANCH)" integer,
-    "BranchID" integer NOT NULL,
-    "BranchName" character varying(100),
-    "Location" character varying(100),
-    "DecorAndTheme" character varying(100),
-    "Rating/Reviews" integer,
-    "ParkingAvailability" boolean,
-    "ParkingTypeParking" character varying(100),
-    "ParkingCostParking" integer
+CREATE TABLE public.hotel_branch (
+    hotelid integer NOT NULL,
+    branchid integer NOT NULL,
+    branchname character varying(100),
+    branch_location character varying(100),
+    decorandtheme character varying(100),
+    rating_reviews integer,
+    parkingavailability boolean,
+    parkingtypeparking character varying(100),
+    parkingcostparking integer
 );
 
 
-ALTER TABLE public."HOTEL_BRANCH" OWNER TO root;
+ALTER TABLE public.hotel_branch OWNER TO root;
 
 --
--- TOC entry 226 (class 1259 OID 57858)
--- Name: HOTEL_MANAGER; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 217 (class 1259 OID 41508)
+-- Name: hotel_manager; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."HOTEL_MANAGER" (
-    "UserID(HOTEL_MANAGER)" integer NOT NULL
+CREATE TABLE public.hotel_manager (
+    userid integer NOT NULL
 );
 
 
-ALTER TABLE public."HOTEL_MANAGER" OWNER TO root;
+ALTER TABLE public.hotel_manager OWNER TO root;
 
 --
--- TOC entry 227 (class 1259 OID 57863)
--- Name: Hotel_MarketingStrategy; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 228 (class 1259 OID 41626)
+-- Name: hotel_marketingstrategy; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Hotel_MarketingStrategy" (
-    "HotelID(Hotel_MarketingStrategy)" integer NOT NULL,
-    "Strategy" character varying(100)
+CREATE TABLE public.hotel_marketingstrategy (
+    hotelid integer NOT NULL,
+    strategy character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Hotel_MarketingStrategy" OWNER TO root;
+ALTER TABLE public.hotel_marketingstrategy OWNER TO root;
 
 --
--- TOC entry 228 (class 1259 OID 57868)
--- Name: Hotel_Technology; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 229 (class 1259 OID 41631)
+-- Name: hotel_technology; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."Hotel_Technology" (
-    "HotelID(Hotel_Technology)" integer NOT NULL,
-    "Technology" character varying(100)
+CREATE TABLE public.hotel_technology (
+    hotelid integer NOT NULL,
+    technology character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."Hotel_Technology" OWNER TO root;
+ALTER TABLE public.hotel_technology OWNER TO root;
 
 --
--- TOC entry 234 (class 1259 OID 57894)
--- Name: LoginLog; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 216 (class 1259 OID 41303)
+-- Name: logs; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."LoginLog" (
-    "LoginID" bigint NOT NULL,
-    "Type" public."LoginType" NOT NULL,
-    "Date-time" date NOT NULL,
-    "UserID" integer NOT NULL
+CREATE TABLE public.logs (
+    logid integer NOT NULL,
+    userid integer,
+    logout timestamp without time zone,
+    login timestamp without time zone
 );
 
 
-ALTER TABLE public."LoginLog" OWNER TO root;
+ALTER TABLE public.logs OWNER TO root;
 
 --
--- TOC entry 233 (class 1259 OID 57893)
--- Name: LoginLog_LoginID_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- TOC entry 219 (class 1259 OID 41528)
+-- Name: normal_user; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE SEQUENCE public."LoginLog_LoginID_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public."LoginLog_LoginID_seq" OWNER TO root;
-
---
--- TOC entry 3516 (class 0 OID 0)
--- Dependencies: 233
--- Name: LoginLog_LoginID_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
---
-
-ALTER SEQUENCE public."LoginLog_LoginID_seq" OWNED BY public."LoginLog"."LoginID";
-
-
---
--- TOC entry 229 (class 1259 OID 57873)
--- Name: NORMAL_USER; Type: TABLE; Schema: public; Owner: root
---
-
-CREATE TABLE public."NORMAL_USER" (
-    "UserID(NORMAL_USER)" integer NOT NULL,
-    "BirthDate" date
+CREATE TABLE public.normal_user (
+    userid integer NOT NULL,
+    birthdate date
 );
 
 
-ALTER TABLE public."NORMAL_USER" OWNER TO root;
+ALTER TABLE public.normal_user OWNER TO root;
 
 --
--- TOC entry 230 (class 1259 OID 57878)
--- Name: NormalUser_Address; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 225 (class 1259 OID 41596)
+-- Name: normaluser_address; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."NormalUser_Address" (
-    "UserID(NormalUser_Address)" integer NOT NULL,
-    "UserAddress" character varying(100)
+CREATE TABLE public.normaluser_address (
+    userid integer NOT NULL,
+    useraddress character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."NormalUser_Address" OWNER TO root;
+ALTER TABLE public.normaluser_address OWNER TO root;
 
 --
--- TOC entry 231 (class 1259 OID 57883)
--- Name: NormalUser_Telephone; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 227 (class 1259 OID 41616)
+-- Name: normaluser_telephone; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."NormalUser_Telephone" (
-    "UserID(NormalUser_Telephone)" integer NOT NULL,
-    "UserTelephone" character varying(100)
+CREATE TABLE public.normaluser_telephone (
+    userid integer NOT NULL,
+    usertelephone character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."NormalUser_Telephone" OWNER TO root;
+ALTER TABLE public.normaluser_telephone OWNER TO root;
 
 --
--- TOC entry 232 (class 1259 OID 57888)
--- Name: ROOM; Type: TABLE; Schema: public; Owner: root
+-- TOC entry 223 (class 1259 OID 41565)
+-- Name: room; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public."ROOM" (
-    "BranchID(ROOM)" integer,
-    "RoomID" integer NOT NULL,
-    "DetailsID(ROOM)" integer,
-    "Status" boolean,
-    "PriceNormal" integer,
-    "PriceWeekend" integer,
-    "PriceEvent" integer
+CREATE TABLE public.room (
+    branchid integer NOT NULL,
+    roomid integer NOT NULL,
+    detailsid integer,
+    status boolean,
+    pricenormal integer,
+    priceweekend integer,
+    priceevent integer
 );
 
 
-ALTER TABLE public."ROOM" OWNER TO root;
+ALTER TABLE public.room OWNER TO root;
 
 --
--- TOC entry 235 (class 1259 OID 58007)
--- Name: view_bookings; Type: VIEW; Schema: public; Owner: root
---
-
-CREATE VIEW public.view_bookings AS
- SELECT b."BookingID",
-    b."UserID(BOOKING)",
-    u."UserName",
-    u."UserPassword",
-    u."UserEmail",
-    u."RecentLogin",
-    b."RoomID(BOOKING)",
-    b."CheckInDate",
-    b."PayType",
-    b."NumberOfBooking",
-    h."HotelName",
-    hb."BranchName",
-    hb."Location",
-    d."RoomDecor",
-    d."Accessibility Features",
-    d."RoomType",
-    d."View",
-    d."Building/Floor",
-    d."Bathroom",
-    d."BedConfiguration",
-    d."Services",
-    d."RoomSize",
-    d."Wi-Fi",
-    d."MaxPeople",
-    d."Smoking",
-    bf."Facility",
-    sm."Measure",
-    tr."Transportation",
-    tel."BranchTelephone",
-    ms."Strategy" AS marketing_strategy,
-    tech."Technology"
-   FROM (((((((((((public."BOOKING" b
-     JOIN public."ROOM" r ON ((b."RoomID(BOOKING)" = r."RoomID")))
-     JOIN public."DETAILS" d ON ((r."DetailsID(ROOM)" = d."DetailsID")))
-     JOIN public."HOTEL_BRANCH" hb ON ((r."BranchID(ROOM)" = hb."BranchID")))
-     JOIN public."HOTEL" h ON ((hb."HotelID(HOTEL_BRANCH)" = h."HotelID")))
-     JOIN public."ALL_USER" u ON ((b."UserID(BOOKING)" = u."UserID")))
-     LEFT JOIN public."Branch_Facilities" bf ON ((r."BranchID(ROOM)" = bf."BranchID(Branch_Facilities)")))
-     LEFT JOIN public."Branch_SecurityMeasures" sm ON ((r."BranchID(ROOM)" = sm."BranchID(Branch_SecurityMeasures)")))
-     LEFT JOIN public."Branch_Transportation" tr ON ((r."BranchID(ROOM)" = tr."BranchID(Branch_Transportation)")))
-     LEFT JOIN public."Branch_Telephone" tel ON ((r."BranchID(ROOM)" = tel."BranchID(Branch_Telephone)")))
-     LEFT JOIN public."Hotel_MarketingStrategy" ms ON ((hb."HotelID(HOTEL_BRANCH)" = ms."HotelID(Hotel_MarketingStrategy)")))
-     LEFT JOIN public."Hotel_Technology" tech ON ((hb."HotelID(HOTEL_BRANCH)" = tech."HotelID(Hotel_Technology)")));
-
-
-ALTER VIEW public.view_bookings OWNER TO root;
-
---
--- TOC entry 3294 (class 2604 OID 57897)
--- Name: LoginLog LoginID; Type: DEFAULT; Schema: public; Owner: root
---
-
-ALTER TABLE ONLY public."LoginLog" ALTER COLUMN "LoginID" SET DEFAULT nextval('public."LoginLog_LoginID_seq"'::regclass);
-
-
---
--- TOC entry 3490 (class 0 OID 57807)
--- Dependencies: 215
--- Data for Name: ADMIN; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3491 (class 0 OID 57812)
--- Dependencies: 216
--- Data for Name: ALL_USER; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3492 (class 0 OID 57817)
--- Dependencies: 217
--- Data for Name: BOOKING; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3493 (class 0 OID 57822)
+-- TOC entry 3493 (class 0 OID 41518)
 -- Dependencies: 218
--- Data for Name: Branch_Facilities; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: admins; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-
-
---
--- TOC entry 3494 (class 0 OID 57827)
--- Dependencies: 219
--- Data for Name: Branch_SecurityMeasures; Type: TABLE DATA; Schema: public; Owner: root
---
-
+INSERT INTO public.admins VALUES (1);
+INSERT INTO public.admins VALUES (4);
 
 
 --
--- TOC entry 3495 (class 0 OID 57830)
--- Dependencies: 220
--- Data for Name: Branch_Telephone; Type: TABLE DATA; Schema: public; Owner: root
+-- TOC entry 3490 (class 0 OID 41283)
+-- Dependencies: 215
+-- Data for Name: all_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-
-
---
--- TOC entry 3496 (class 0 OID 57833)
--- Dependencies: 221
--- Data for Name: Branch_Transportation; Type: TABLE DATA; Schema: public; Owner: root
---
-
+INSERT INTO public.all_user VALUES (1, 'password123', 'John Doe', 'john.doe@example.com');
+INSERT INTO public.all_user VALUES (2, 'password1234', 'John Doe', 'com');
+INSERT INTO public.all_user VALUES (3, 'password123', 'JohnDoe', '@example.com');
+INSERT INTO public.all_user VALUES (4, 'passw1221ord123', 'JohnDoe2', 'jo132hn.doe@example.com');
 
 
 --
--- TOC entry 3497 (class 0 OID 57836)
--- Dependencies: 222
--- Data for Name: DETAILS; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3498 (class 0 OID 57843)
--- Dependencies: 223
--- Data for Name: Details_Amentities; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3499 (class 0 OID 57848)
+-- TOC entry 3499 (class 0 OID 41579)
 -- Dependencies: 224
--- Data for Name: HOTEL; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: booking; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-
-
---
--- TOC entry 3500 (class 0 OID 57853)
--- Dependencies: 225
--- Data for Name: HOTEL_BRANCH; Type: TABLE DATA; Schema: public; Owner: root
---
-
+INSERT INTO public.booking VALUES (2, 1, 1, '3024-03-10', 'Credit Card', 2);
 
 
 --
--- TOC entry 3501 (class 0 OID 57858)
--- Dependencies: 226
--- Data for Name: HOTEL_MANAGER; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3502 (class 0 OID 57863)
--- Dependencies: 227
--- Data for Name: Hotel_MarketingStrategy; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3503 (class 0 OID 57868)
--- Dependencies: 228
--- Data for Name: Hotel_Technology; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3509 (class 0 OID 57894)
--- Dependencies: 234
--- Data for Name: LoginLog; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3504 (class 0 OID 57873)
--- Dependencies: 229
--- Data for Name: NORMAL_USER; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3505 (class 0 OID 57878)
+-- TOC entry 3505 (class 0 OID 41646)
 -- Dependencies: 230
--- Data for Name: NormalUser_Address; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: branch_facilities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3506 (class 0 OID 57883)
+-- TOC entry 3506 (class 0 OID 41661)
 -- Dependencies: 231
--- Data for Name: NormalUser_Telephone; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: branch_securitymeasures; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 
 
 --
--- TOC entry 3507 (class 0 OID 57888)
--- Dependencies: 232
--- Data for Name: ROOM; Type: TABLE DATA; Schema: public; Owner: root
---
-
-
-
---
--- TOC entry 3517 (class 0 OID 0)
+-- TOC entry 3508 (class 0 OID 41684)
 -- Dependencies: 233
--- Name: LoginLog_LoginID_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Data for Name: branch_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public."LoginLog_LoginID_seq"', 1, false);
 
 
 --
--- TOC entry 3296 (class 2606 OID 57811)
--- Name: ADMIN ADMIN_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3507 (class 0 OID 41674)
+-- Dependencies: 232
+-- Data for Name: branch_transportation; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."ADMIN"
-    ADD CONSTRAINT "ADMIN_pkey" PRIMARY KEY ("UserID(ADMIN)");
 
 
 --
--- TOC entry 3298 (class 2606 OID 57816)
--- Name: ALL_USER ALL_USER_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3495 (class 0 OID 41538)
+-- Dependencies: 220
+-- Data for Name: details; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."ALL_USER"
-    ADD CONSTRAINT "ALL_USER_pkey" PRIMARY KEY ("UserID");
+INSERT INTO public.details VALUES (1, 'Modern', 'Wheelchair Accessible', 'Standard', 'City View', '5th Floor', 'Private', 'Double Bed', 'Cleaning Service', 30, true, 2, false);
 
 
 --
--- TOC entry 3300 (class 2606 OID 57821)
--- Name: BOOKING BOOKING_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3501 (class 0 OID 41606)
+-- Dependencies: 226
+-- Data for Name: details_amentities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."BOOKING"
-    ADD CONSTRAINT "BOOKING_pkey" PRIMARY KEY ("BookingID");
+INSERT INTO public.details_amentities VALUES (1, 'Free Wi-Fi');
 
 
 --
--- TOC entry 3302 (class 2606 OID 57826)
--- Name: Branch_Facilities Branch_Facilities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3496 (class 0 OID 41545)
+-- Dependencies: 221
+-- Data for Name: hotel; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Branch_Facilities"
-    ADD CONSTRAINT "Branch_Facilities_pkey" PRIMARY KEY ("BranchID(Branch_Facilities)");
+INSERT INTO public.hotel VALUES (1, 1, 'Sample Hotel', 'Sample Brand');
 
 
 --
--- TOC entry 3304 (class 2606 OID 57842)
--- Name: DETAILS DETAILS_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3497 (class 0 OID 41555)
+-- Dependencies: 222
+-- Data for Name: hotel_branch; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."DETAILS"
-    ADD CONSTRAINT "DETAILS_pkey" PRIMARY KEY ("DetailsID");
+INSERT INTO public.hotel_branch VALUES (1, 1, 'Main Branch', 'City Center', 'Modern', 4, true, 'Valet Parking', 10);
 
 
 --
--- TOC entry 3306 (class 2606 OID 57847)
--- Name: Details_Amentities Details_Amentities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3492 (class 0 OID 41508)
+-- Dependencies: 217
+-- Data for Name: hotel_manager; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Details_Amentities"
-    ADD CONSTRAINT "Details_Amentities_pkey" PRIMARY KEY ("DetailsID(Details_Amentities)");
+INSERT INTO public.hotel_manager VALUES (1);
 
 
 --
--- TOC entry 3310 (class 2606 OID 57857)
--- Name: HOTEL_BRANCH HOTEL_BRANCH_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3503 (class 0 OID 41626)
+-- Dependencies: 228
+-- Data for Name: hotel_marketingstrategy; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."HOTEL_BRANCH"
-    ADD CONSTRAINT "HOTEL_BRANCH_pkey" PRIMARY KEY ("BranchID");
 
 
 --
--- TOC entry 3312 (class 2606 OID 57862)
--- Name: HOTEL_MANAGER HOTEL_MANAGER_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3504 (class 0 OID 41631)
+-- Dependencies: 229
+-- Data for Name: hotel_technology; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."HOTEL_MANAGER"
-    ADD CONSTRAINT "HOTEL_MANAGER_pkey" PRIMARY KEY ("UserID(HOTEL_MANAGER)");
 
 
 --
--- TOC entry 3308 (class 2606 OID 57852)
--- Name: HOTEL HOTEL_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3491 (class 0 OID 41303)
+-- Dependencies: 216
+-- Data for Name: logs; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."HOTEL"
-    ADD CONSTRAINT "HOTEL_pkey" PRIMARY KEY ("HotelID");
+INSERT INTO public.logs VALUES (11, 1, '2024-02-06 15:51:38.98359', '2024-02-05 16:47:08.243433');
+INSERT INTO public.logs VALUES (12, 1, '2024-02-06 15:52:21.399947', '2024-02-06 15:52:14.663735');
+INSERT INTO public.logs VALUES (13, 1, NULL, '2024-02-06 15:54:07.735037');
 
 
 --
--- TOC entry 3314 (class 2606 OID 57867)
--- Name: Hotel_MarketingStrategy Hotel_MarketingStrategy_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3494 (class 0 OID 41528)
+-- Dependencies: 219
+-- Data for Name: normal_user; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Hotel_MarketingStrategy"
-    ADD CONSTRAINT "Hotel_MarketingStrategy_pkey" PRIMARY KEY ("HotelID(Hotel_MarketingStrategy)");
+INSERT INTO public.normal_user VALUES (1, '1990-01-01');
+INSERT INTO public.normal_user VALUES (2, '2024-02-05');
+INSERT INTO public.normal_user VALUES (3, '1990-01-01');
+INSERT INTO public.normal_user VALUES (4, '2024-02-06');
 
 
 --
--- TOC entry 3316 (class 2606 OID 57872)
--- Name: Hotel_Technology Hotel_Technology_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3500 (class 0 OID 41596)
+-- Dependencies: 225
+-- Data for Name: normaluser_address; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Hotel_Technology"
-    ADD CONSTRAINT "Hotel_Technology_pkey" PRIMARY KEY ("HotelID(Hotel_Technology)");
+INSERT INTO public.normaluser_address VALUES (1, '123 Main St');
+INSERT INTO public.normaluser_address VALUES (1, '456 Oak St');
+INSERT INTO public.normaluser_address VALUES (3, '123 Main St');
+INSERT INTO public.normaluser_address VALUES (3, '456 Oak St');
+INSERT INTO public.normaluser_address VALUES (4, '123 Main St');
+INSERT INTO public.normaluser_address VALUES (4, '456 Oak Ave');
 
 
 --
--- TOC entry 3326 (class 2606 OID 57899)
--- Name: LoginLog LoginLog_Pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3502 (class 0 OID 41616)
+-- Dependencies: 227
+-- Data for Name: normaluser_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."LoginLog"
-    ADD CONSTRAINT "LoginLog_Pkey" PRIMARY KEY ("LoginID");
+INSERT INTO public.normaluser_telephone VALUES (1, '555-1234');
+INSERT INTO public.normaluser_telephone VALUES (1, '555-5678');
+INSERT INTO public.normaluser_telephone VALUES (3, '555-1234');
+INSERT INTO public.normaluser_telephone VALUES (3, '555-5678');
+INSERT INTO public.normaluser_telephone VALUES (4, '555-1234');
+INSERT INTO public.normaluser_telephone VALUES (4, '555-5678');
 
 
 --
--- TOC entry 3318 (class 2606 OID 57877)
--- Name: NORMAL_USER NORMAL_USER_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3498 (class 0 OID 41565)
+-- Dependencies: 223
+-- Data for Name: room; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."NORMAL_USER"
-    ADD CONSTRAINT "NORMAL_USER_pkey" PRIMARY KEY ("UserID(NORMAL_USER)");
+INSERT INTO public.room VALUES (1, 1, 1, true, 100, 120, 150);
 
 
 --
--- TOC entry 3320 (class 2606 OID 57882)
--- Name: NormalUser_Address NormalUser_Address_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3298 (class 2606 OID 41544)
+-- Name: details DETAILS_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."NormalUser_Address"
-    ADD CONSTRAINT "NormalUser_Address_pkey" PRIMARY KEY ("UserID(NormalUser_Address)");
+ALTER TABLE ONLY public.details
+    ADD CONSTRAINT "DETAILS_pkey" PRIMARY KEY (detailsid);
 
 
 --
--- TOC entry 3322 (class 2606 OID 57887)
--- Name: NormalUser_Telephone NormalUser_Telephone_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3285 (class 2606 OID 41594)
+-- Name: booking NumberOfBooking; Type: CHECK CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."NormalUser_Telephone"
-    ADD CONSTRAINT "NormalUser_Telephone_pkey" PRIMARY KEY ("UserID(NormalUser_Telephone)");
+ALTER TABLE public.booking
+    ADD CONSTRAINT "NumberOfBooking" CHECK ((numberofbooking <= 3)) NOT VALID;
 
 
 --
--- TOC entry 3324 (class 2606 OID 57892)
--- Name: ROOM ROOM_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3286 (class 2606 OID 41595)
+-- Name: booking NumberOfBooking2; Type: CHECK CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."ROOM"
-    ADD CONSTRAINT "ROOM_pkey" PRIMARY KEY ("RoomID");
+ALTER TABLE public.booking
+    ADD CONSTRAINT "NumberOfBooking2" CHECK ((numberofbooking >= 0)) NOT VALID;
 
 
 --
--- TOC entry 3330 (class 2606 OID 57915)
--- Name: Branch_Facilities BranchID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3306 (class 2606 OID 41569)
+-- Name: room ROOM_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Branch_Facilities"
-    ADD CONSTRAINT "BranchID" FOREIGN KEY ("BranchID(Branch_Facilities)") REFERENCES public."HOTEL_BRANCH"("BranchID");
+ALTER TABLE ONLY public.room
+    ADD CONSTRAINT "ROOM_pkey" PRIMARY KEY (branchid, roomid);
 
 
 --
--- TOC entry 3331 (class 2606 OID 57920)
--- Name: Branch_SecurityMeasures BranchID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3308 (class 2606 OID 41578)
+-- Name: room RoomID; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Branch_SecurityMeasures"
-    ADD CONSTRAINT "BranchID" FOREIGN KEY ("BranchID(Branch_SecurityMeasures)") REFERENCES public."HOTEL_BRANCH"("BranchID") NOT VALID;
+ALTER TABLE ONLY public.room
+    ADD CONSTRAINT "RoomID" UNIQUE (roomid);
 
 
 --
--- TOC entry 3332 (class 2606 OID 57925)
--- Name: Branch_Telephone BranchID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3294 (class 2606 OID 41522)
+-- Name: admins admins_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Branch_Telephone"
-    ADD CONSTRAINT "BranchID" FOREIGN KEY ("BranchID(Branch_Telephone)") REFERENCES public."HOTEL_BRANCH"("BranchID") NOT VALID;
+ALTER TABLE ONLY public.admins
+    ADD CONSTRAINT admins_pkey PRIMARY KEY (userid);
 
 
 --
--- TOC entry 3333 (class 2606 OID 57930)
--- Name: Branch_Transportation BranchID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3288 (class 2606 OID 41287)
+-- Name: all_user all_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Branch_Transportation"
-    ADD CONSTRAINT "BranchID" FOREIGN KEY ("BranchID(Branch_Transportation)") REFERENCES public."HOTEL_BRANCH"("BranchID");
+ALTER TABLE ONLY public.all_user
+    ADD CONSTRAINT all_user_pkey PRIMARY KEY (userid);
 
 
 --
--- TOC entry 3343 (class 2606 OID 57980)
--- Name: ROOM BranchID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3310 (class 2606 OID 41583)
+-- Name: booking booking_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."ROOM"
-    ADD CONSTRAINT "BranchID" FOREIGN KEY ("BranchID(ROOM)") REFERENCES public."HOTEL_BRANCH"("BranchID") NOT VALID;
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_pkey PRIMARY KEY (bookingid);
 
 
 --
--- TOC entry 3334 (class 2606 OID 57935)
--- Name: Details_Amentities DetailsID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3302 (class 2606 OID 41571)
+-- Name: hotel_branch branch; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Details_Amentities"
-    ADD CONSTRAINT "DetailsID" FOREIGN KEY ("DetailsID(Details_Amentities)") REFERENCES public."DETAILS"("DetailsID");
+ALTER TABLE ONLY public.hotel_branch
+    ADD CONSTRAINT branch UNIQUE (branchid);
 
 
 --
--- TOC entry 3344 (class 2606 OID 57985)
--- Name: ROOM DetailsID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3322 (class 2606 OID 41650)
+-- Name: branch_facilities branch_facilities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."ROOM"
-    ADD CONSTRAINT "DetailsID" FOREIGN KEY ("DetailsID(ROOM)") REFERENCES public."DETAILS"("DetailsID") NOT VALID;
+ALTER TABLE ONLY public.branch_facilities
+    ADD CONSTRAINT branch_facilities_pkey PRIMARY KEY (branchid, facility);
 
 
 --
--- TOC entry 3336 (class 2606 OID 57945)
--- Name: HOTEL_BRANCH HotelID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3324 (class 2606 OID 41665)
+-- Name: branch_securitymeasures branch_measure_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."HOTEL_BRANCH"
-    ADD CONSTRAINT "HotelID" FOREIGN KEY ("HotelID(HOTEL_BRANCH)") REFERENCES public."HOTEL"("HotelID");
+ALTER TABLE ONLY public.branch_securitymeasures
+    ADD CONSTRAINT branch_measure_pkey PRIMARY KEY (branchid, measure);
 
 
 --
--- TOC entry 3338 (class 2606 OID 57955)
--- Name: Hotel_MarketingStrategy HotelID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3328 (class 2606 OID 41688)
+-- Name: branch_telephone branch_telephone_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Hotel_MarketingStrategy"
-    ADD CONSTRAINT "HotelID" FOREIGN KEY ("HotelID(Hotel_MarketingStrategy)") REFERENCES public."HOTEL"("HotelID") NOT VALID;
+ALTER TABLE ONLY public.branch_telephone
+    ADD CONSTRAINT branch_telephone_pkey PRIMARY KEY (branchid, branchtelephone);
 
 
 --
--- TOC entry 3339 (class 2606 OID 57960)
--- Name: Hotel_Technology HotelID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3326 (class 2606 OID 41678)
+-- Name: branch_transportation branch_transportation_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."Hotel_Technology"
-    ADD CONSTRAINT "HotelID" FOREIGN KEY ("HotelID(Hotel_Technology)") REFERENCES public."HOTEL"("HotelID") NOT VALID;
+ALTER TABLE ONLY public.branch_transportation
+    ADD CONSTRAINT branch_transportation_pkey PRIMARY KEY (branchid, transportation);
 
 
 --
--- TOC entry 3328 (class 2606 OID 57905)
--- Name: BOOKING RoomID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3314 (class 2606 OID 41610)
+-- Name: details_amentities details_amentities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."BOOKING"
-    ADD CONSTRAINT "RoomID" FOREIGN KEY ("RoomID(BOOKING)") REFERENCES public."ROOM"("RoomID") NOT VALID;
+ALTER TABLE ONLY public.details_amentities
+    ADD CONSTRAINT details_amentities_pkey PRIMARY KEY (detailsid, amentities);
 
 
 --
--- TOC entry 3327 (class 2606 OID 57900)
--- Name: ADMIN UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3304 (class 2606 OID 41559)
+-- Name: hotel_branch hotel_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."ADMIN"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(ADMIN)") REFERENCES public."ALL_USER"("UserID") NOT VALID;
+ALTER TABLE ONLY public.hotel_branch
+    ADD CONSTRAINT hotel_branch_pkey PRIMARY KEY (hotelid, branchid);
 
 
 --
--- TOC entry 3329 (class 2606 OID 57910)
--- Name: BOOKING UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3292 (class 2606 OID 41512)
+-- Name: hotel_manager hotel_manager_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."BOOKING"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(BOOKING)") REFERENCES public."NORMAL_USER"("UserID(NORMAL_USER)") NOT VALID;
+ALTER TABLE ONLY public.hotel_manager
+    ADD CONSTRAINT hotel_manager_pkey PRIMARY KEY (userid);
 
 
 --
--- TOC entry 3335 (class 2606 OID 57940)
--- Name: HOTEL UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3318 (class 2606 OID 41630)
+-- Name: hotel_marketingstrategy hotel_marketingstrategy_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."HOTEL"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(HOTEL_MANAGER)") REFERENCES public."HOTEL_MANAGER"("UserID(HOTEL_MANAGER)") NOT VALID;
+ALTER TABLE ONLY public.hotel_marketingstrategy
+    ADD CONSTRAINT hotel_marketingstrategy_pkey PRIMARY KEY (hotelid, strategy);
 
 
 --
--- TOC entry 3337 (class 2606 OID 57950)
--- Name: HOTEL_MANAGER UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3300 (class 2606 OID 41549)
+-- Name: hotel hotel_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."HOTEL_MANAGER"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(HOTEL_MANAGER)") REFERENCES public."ALL_USER"("UserID") NOT VALID;
+ALTER TABLE ONLY public.hotel
+    ADD CONSTRAINT hotel_pkey PRIMARY KEY (hotelid);
 
 
 --
--- TOC entry 3340 (class 2606 OID 57965)
--- Name: NORMAL_USER UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3320 (class 2606 OID 41635)
+-- Name: hotel_technology hotel_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."NORMAL_USER"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(NORMAL_USER)") REFERENCES public."ALL_USER"("UserID") NOT VALID;
+ALTER TABLE ONLY public.hotel_technology
+    ADD CONSTRAINT hotel_technology_pkey PRIMARY KEY (hotelid, technology);
 
 
 --
--- TOC entry 3341 (class 2606 OID 57970)
--- Name: NormalUser_Address UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3290 (class 2606 OID 41307)
+-- Name: logs logs_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."NormalUser_Address"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(NormalUser_Address)") REFERENCES public."NORMAL_USER"("UserID(NORMAL_USER)") NOT VALID;
+ALTER TABLE ONLY public.logs
+    ADD CONSTRAINT logs_pkey PRIMARY KEY (logid);
 
 
 --
--- TOC entry 3342 (class 2606 OID 57975)
--- Name: NormalUser_Telephone UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3296 (class 2606 OID 41532)
+-- Name: normal_user normal_user_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."NormalUser_Telephone"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID(NormalUser_Telephone)") REFERENCES public."NORMAL_USER"("UserID(NORMAL_USER)");
+ALTER TABLE ONLY public.normal_user
+    ADD CONSTRAINT normal_user_pkey PRIMARY KEY (userid);
 
 
 --
--- TOC entry 3345 (class 2606 OID 57990)
--- Name: LoginLog UserID; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- TOC entry 3312 (class 2606 OID 41600)
+-- Name: normaluser_address normaluser_address_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
-ALTER TABLE ONLY public."LoginLog"
-    ADD CONSTRAINT "UserID" FOREIGN KEY ("UserID") REFERENCES public."ALL_USER"("UserID");
+ALTER TABLE ONLY public.normaluser_address
+    ADD CONSTRAINT normaluser_address_pkey PRIMARY KEY (userid, useraddress);
 
 
--- Completed on 2024-02-07 06:48:35 UTC
+--
+-- TOC entry 3316 (class 2606 OID 41620)
+-- Name: normaluser_telephone normaluser_telephone_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.normaluser_telephone
+    ADD CONSTRAINT normaluser_telephone_pkey PRIMARY KEY (userid, usertelephone);
+
+
+--
+-- TOC entry 3344 (class 2606 OID 41666)
+-- Name: branch_securitymeasures Branch_SecurityMeasures; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_securitymeasures
+    ADD CONSTRAINT "Branch_SecurityMeasures" FOREIGN KEY (branchid) REFERENCES public.hotel_branch(branchid) NOT VALID;
+
+
+--
+-- TOC entry 3329 (class 2606 OID 41308)
+-- Name: logs UserIDLogs; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.logs
+    ADD CONSTRAINT "UserIDLogs" FOREIGN KEY (userid) REFERENCES public.all_user(userid) NOT VALID;
+
+
+--
+-- TOC entry 3336 (class 2606 OID 41589)
+-- Name: booking booking_room; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_room FOREIGN KEY (roomid) REFERENCES public.room(roomid) NOT VALID;
+
+
+--
+-- TOC entry 3337 (class 2606 OID 41584)
+-- Name: booking booking_user; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.booking
+    ADD CONSTRAINT booking_user FOREIGN KEY (userid) REFERENCES public.normal_user(userid) NOT VALID;
+
+
+--
+-- TOC entry 3343 (class 2606 OID 41651)
+-- Name: branch_facilities branch_facilities; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_facilities
+    ADD CONSTRAINT branch_facilities FOREIGN KEY (branchid) REFERENCES public.hotel_branch(branchid) NOT VALID;
+
+
+--
+-- TOC entry 3345 (class 2606 OID 41689)
+-- Name: branch_transportation branch_telephone; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_transportation
+    ADD CONSTRAINT branch_telephone FOREIGN KEY (branchid) REFERENCES public.hotel_branch(branchid) NOT VALID;
+
+
+--
+-- TOC entry 3346 (class 2606 OID 41679)
+-- Name: branch_transportation branch_transportation; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_transportation
+    ADD CONSTRAINT branch_transportation FOREIGN KEY (branchid) REFERENCES public.hotel_branch(branchid) NOT VALID;
+
+
+--
+-- TOC entry 3339 (class 2606 OID 41611)
+-- Name: details_amentities details_amentities_details; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.details_amentities
+    ADD CONSTRAINT details_amentities_details FOREIGN KEY (detailsid) REFERENCES public.details(detailsid) NOT VALID;
+
+
+--
+-- TOC entry 3334 (class 2606 OID 41560)
+-- Name: hotel_branch hotel_branch_hotel; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel_branch
+    ADD CONSTRAINT hotel_branch_hotel FOREIGN KEY (hotelid) REFERENCES public.hotel(hotelid) NOT VALID;
+
+
+--
+-- TOC entry 3341 (class 2606 OID 41636)
+-- Name: hotel_marketingstrategy hotel_marketingstrategy_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel_marketingstrategy
+    ADD CONSTRAINT hotel_marketingstrategy_normaluser FOREIGN KEY (hotelid) REFERENCES public.hotel(hotelid) NOT VALID;
+
+
+--
+-- TOC entry 3333 (class 2606 OID 41550)
+-- Name: hotel hotel_normal_user; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel
+    ADD CONSTRAINT hotel_normal_user FOREIGN KEY (userid) REFERENCES public.hotel_manager(userid) NOT VALID;
+
+
+--
+-- TOC entry 3342 (class 2606 OID 41641)
+-- Name: hotel_technology hotel_technology_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel_technology
+    ADD CONSTRAINT hotel_technology_normaluser FOREIGN KEY (hotelid) REFERENCES public.hotel(hotelid) NOT VALID;
+
+
+--
+-- TOC entry 3338 (class 2606 OID 41601)
+-- Name: normaluser_address normaluser_address_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.normaluser_address
+    ADD CONSTRAINT normaluser_address_normaluser FOREIGN KEY (userid) REFERENCES public.normal_user(userid) NOT VALID;
+
+
+--
+-- TOC entry 3340 (class 2606 OID 41621)
+-- Name: normaluser_telephone normaluser_telephone_normaluser; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.normaluser_telephone
+    ADD CONSTRAINT normaluser_telephone_normaluser FOREIGN KEY (userid) REFERENCES public.normal_user(userid) NOT VALID;
+
+
+--
+-- TOC entry 3335 (class 2606 OID 41572)
+-- Name: room room_branch; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.room
+    ADD CONSTRAINT room_branch FOREIGN KEY (branchid) REFERENCES public.hotel_branch(branchid) NOT VALID;
+
+
+--
+-- TOC entry 3331 (class 2606 OID 41523)
+-- Name: admins userid_admins; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.admins
+    ADD CONSTRAINT userid_admins FOREIGN KEY (userid) REFERENCES public.all_user(userid) NOT VALID;
+
+
+--
+-- TOC entry 3330 (class 2606 OID 41513)
+-- Name: hotel_manager userid_hotel_manager; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel_manager
+    ADD CONSTRAINT userid_hotel_manager FOREIGN KEY (userid) REFERENCES public.all_user(userid) NOT VALID;
+
+
+--
+-- TOC entry 3332 (class 2606 OID 41533)
+-- Name: normal_user userid_normal_user; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.normal_user
+    ADD CONSTRAINT userid_normal_user FOREIGN KEY (userid) REFERENCES public.all_user(userid) NOT VALID;
+
+
+-- Completed on 2024-02-06 16:15:29 UTC
 
 --
 -- PostgreSQL database dump complete

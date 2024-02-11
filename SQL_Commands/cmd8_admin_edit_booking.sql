@@ -1,71 +1,50 @@
-CREATE OR REPLACE PROCEDURE admin_edit_booking(
-    p_admin_name VARCHAR(100),
-    p_admin_password VARCHAR(100),
+CREATE OR REPLACE PROCEDURE admins_edit_bookings(
+    p_user_email VARCHAR(100),
+    p_user_password VARCHAR(100),
     p_booking_id INTEGER,
-    p_new_checkin_date DATE,
-    p_new_pay_type VARCHAR(100),
-    p_new_number_of_booking INTEGER
+    p_new_checkin_date DATE DEFAULT NULL,
+    p_new_pay_type VARCHAR(100) DEFAULT NULL,
+    p_new_number_of_booking INTEGER DEFAULT NULL
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_admin_id INTEGER;
-    v_room_status BOOLEAN;
-    v_existing_booking_id INTEGER;
+    v_user_id INTEGER;
 BEGIN
-    -- Assuming "UserName" is unique for admins
-    SELECT "UserID"
-    INTO v_admin_id
-    FROM public."ALL_USER"
-    WHERE "UserName" = p_admin_name
-    AND "UserPassword" = p_admin_password;
+    -- Get user ID based on email and password
+    SELECT UserID INTO v_user_id
+    FROM public.ALL_USER
+    WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
-    IF v_admin_id IS NOT NULL THEN
-        -- Check if the booking exists
-        SELECT "BookingID"
-        INTO v_existing_booking_id
-        FROM public."BOOKING"
-        WHERE "BookingID" = p_booking_id;
-
-        IF v_existing_booking_id IS NOT NULL THEN
-            -- Check if the room status is true
-            SELECT "Status"
-            INTO v_room_status
-            FROM public."ROOM"
-            WHERE "RoomID" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id);
-
-            IF v_room_status THEN
-                -- Check for overlapping bookings for the same room
-                SELECT "BookingID"
-                INTO v_existing_booking_id
-                FROM public."BOOKING"
-                WHERE "RoomID(BOOKING)" = (SELECT "RoomID(BOOKING)" FROM public."BOOKING" WHERE "BookingID" = p_booking_id)
-                AND NOT(
-                    ("CheckInDate" < p_new_checkin_date AND "CheckInDate" + p_new_number_of_booking - 1 < p_new_checkin_date)
-                    OR
-                    ("CheckInDate" > p_new_checkin_date + p_new_number_of_booking - 1 AND "CheckInDate" + p_new_number_of_booking - 1 > p_new_checkin_date + p_new_number_of_booking)
-                );
-
-                IF v_existing_booking_id IS NULL THEN
-                    -- Update the existing booking
-                    UPDATE public."BOOKING"
-                    SET "CheckInDate" = p_new_checkin_date,
-                        "PayType" = p_new_pay_type,
-                        "NumberOfBooking" = p_new_number_of_booking
-                    WHERE "BookingID" = p_booking_id;
-
-                    RAISE NOTICE 'Booking % updated by admin %.', p_booking_id, p_admin_name;
-                ELSE
-                    RAISE EXCEPTION 'New booking dates overlap with an existing booking.';
-                END IF;
-            ELSE
-                RAISE EXCEPTION 'Room status is not available';
-            END IF;
-        ELSE
-            RAISE EXCEPTION 'Booking does not exist.';
-        END IF;
-    ELSE
-        RAISE EXCEPTION 'Admin not found with the given credentials';
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
+
+    -- Check if the user is an admin
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.admins
+        WHERE UserID = v_user_id
+    ) THEN
+        RAISE EXCEPTION 'User found, but not an admin';
+    END IF;
+
+    -- Check if the booking exists
+    IF NOT EXISTS (
+        SELECT 1
+        FROM BOOKING
+        WHERE BookingID = p_booking_id
+    ) THEN
+        RAISE EXCEPTION 'Booking not found';
+    END IF;
+
+    -- Update the booking with the new values if provided
+    UPDATE BOOKING
+    SET 
+        CheckInDate = COALESCE(p_new_checkin_date, CheckInDate),
+        PayType = COALESCE(p_new_pay_type, PayType),
+        NumberOfBooking = COALESCE(p_new_number_of_booking, NumberOfBooking)
+    WHERE BookingID = p_booking_id;
 END;
 $$;
