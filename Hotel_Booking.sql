@@ -845,12 +845,27 @@ ALTER TABLE public.branch_facilities OWNER TO root;
 --
 
 CREATE TABLE public.branch_securitymeasures (
+    branch_securitymeasure_id integer NOT NULL,
     branchid integer NOT NULL,
     measure character varying(100) NOT NULL
 );
 
 
 ALTER TABLE public.branch_securitymeasures OWNER TO root;
+
+--
+-- Name: branch_securitymeasures_branch_securitymeasure_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+ALTER TABLE public.branch_securitymeasures ALTER COLUMN branch_securitymeasure_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.branch_securitymeasures_branch_securitymeasure_id_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1
+);
+
 
 --
 -- Name: branch_telephone; Type: TABLE; Schema: public; Owner: root
@@ -1223,6 +1238,13 @@ INSERT INTO public.room VALUES (1, 1, 1, true, 100, 120, 150);
 
 
 --
+-- Name: branch_securitymeasures_branch_securitymeasure_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.branch_securitymeasures_branch_securitymeasure_id_seq', 0, false);
+
+
+--
 -- Name: branch_telephone_branch_telephone_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
@@ -1321,7 +1343,7 @@ ALTER TABLE ONLY public.branch_facilities
 --
 
 ALTER TABLE ONLY public.branch_securitymeasures
-    ADD CONSTRAINT branch_measure_pkey PRIMARY KEY (branchid, measure);
+    ADD CONSTRAINT branch_measure_pkey PRIMARY KEY (branch_securitymeasure_id) INCLUDE (branch_securitymeasure_id);
 
 
 --
