@@ -1631,6 +1631,14 @@ ALTER TABLE ONLY public.branch_transportation
 
 
 --
+-- Name: room detail_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.room
+    ADD CONSTRAINT detail_fkey FOREIGN KEY (detailsid) REFERENCES public.details(detailsid) NOT VALID;
+
+
+--
 -- Name: details_amentities details_amentities_details; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
