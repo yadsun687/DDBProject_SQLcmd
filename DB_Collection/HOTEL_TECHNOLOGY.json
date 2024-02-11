@@ -1,15 +1,23 @@
 {
     "title": "HOTEL_TECHNOLOGY",
     "required": [
+        "Hotel_technology_id",
         "HotelID",
         "Technology"
     ],
     "properties": {
+        "Hotel_technology_id": {
+            "bsonType": "int",
+            "description": "The unique identifier for the hotel technology",
+            "unique": true
+        },
         "HotelID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the hotel"
         },
         "Technology": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The technology used by the hotel"
         }
     }
 }

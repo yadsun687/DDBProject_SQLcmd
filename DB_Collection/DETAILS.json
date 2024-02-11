@@ -4,14 +4,14 @@
         "DetailID",
         "RoomDecor",
         "AccessibilityFeatures",
-        "bsonType",
+        "RoomType",
         "View",
-        "BuildingAndFloor",
+        "Building/Floor",
         "Bathroom",
         "BedConfiguration",
         "Services",
         "RoomSize",
-        "WiFi",
+        "Wi-Fi",
         "MaxPeople",
         "Smoking"
     ],
@@ -28,7 +28,7 @@
             "bsonType": "string",
             "description": "The accessibility features of the room"
         },
-        "bsonType": {
+        "RoomType": {
             "bsonType": "string",
             "description": "bsonType of room"
         },
@@ -36,7 +36,7 @@
             "bsonType": "string",
             "description": "The view from the room"
         },
-        "BuildingAndFloor": {
+        "Building/Floor": {
             "bsonType": "string",
             "description": "The building and floor of the room"
         },
@@ -56,7 +56,7 @@
             "bsonType": "int",
             "description": "The size of the room"
         },
-        "WiFi": {
+        "Wi-Fi": {
             "bsonType": "bool",
             "description": "The WiFi availability in the room"
         },

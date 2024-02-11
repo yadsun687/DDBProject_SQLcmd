@@ -1,15 +1,23 @@
 {
     "title": "BRANCH_TELEPHONE",
     "required": [
+        "Branch_telephone_id",
         "BranchID",
         "BranchTelephone"
     ],
     "properties": {
+        "Branch_telephone_id": {
+            "bsonType": "int",
+            "description": "The unique identifier for the branch telephone.",
+            "unique": true
+        },
         "BranchID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the branch."
         },
         "BranchTelephone": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The telephone number of the branch."
         }
     }
 }

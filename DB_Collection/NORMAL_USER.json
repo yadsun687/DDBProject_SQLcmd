@@ -6,10 +6,12 @@
     ],
     "properties": {
         "UserID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the user."
         },
         "BirthDate": {
-            "bsonType": "date"
+            "bsonType": "date",
+            "description": "The date of birth for the user."
         }
     }
 }

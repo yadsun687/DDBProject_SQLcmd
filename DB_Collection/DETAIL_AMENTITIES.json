@@ -2,14 +2,21 @@
     "title": "DETAIL_AMENTITIES",
     "required": [
         "DetailID",
+        "details_amentities_id",
         "Amentities"
     ],
     "properties": {
         "DetailID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the detail"
+        },
+        "details_amentities_id": {
+            "bsonType": "int",
+            "description": "The ID of the detail amenities"
         },
         "Amentities": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The amenities of the detail"
         }
     }
 }

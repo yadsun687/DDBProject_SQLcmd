@@ -5,7 +5,8 @@
     ],
     "properties": {
         "UserID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the user"
         }
     }
 }

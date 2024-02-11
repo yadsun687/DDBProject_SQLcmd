@@ -1,15 +1,23 @@
 {
     "title": "HOTEL_MARKETING_STRATEGY",
     "required": [
+        "Hotel_Strategy_id",
         "HotelID",
         "Strategy"
     ],
     "properties": {
+        "Hotel_Strategy_id": {
+            "bsonType": "int",
+            "description": "The unique identifier for the hotel marketing strategy.",
+            "unique": true
+        },
         "HotelID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the hotel."
         },
         "Strategy": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The marketing strategy employed by the hotel."
         }
     }
 }
