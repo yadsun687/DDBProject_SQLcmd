@@ -1,0 +1,43 @@
+{
+    "title": "HOTEL_BRANCH",
+    "required": [
+        "HotelID",
+        "BranchID",
+        "BranchName",
+        "Location",
+        "DecorAndTheme",
+        "RatingAndReview",
+        "ParkingAvailability",
+        "ParkingTypeParking",
+        "ParkingCostParking"
+    ],
+    "properties": {
+        "HotelID": {
+            "bsonType": "int"
+        },
+        "BranchID": {
+            "bsonType": "int"
+        },
+        "BranchName": {
+            "bsonType": "string"
+        },
+        "Location": {
+            "bsonType": "string"
+        },
+        "DecorAndTheme": {
+            "bsonType": "string"
+        },
+        "RatingAndReview": {
+            "bsonType": "int"
+        },
+        "ParkingAvailability": {
+            "bsonType": "bool"
+        },
+        "ParkingTypeParking": {
+            "bsonType": "string"
+        },
+        "ParkingCostParking": {
+            "bsonType": "int"
+        }
+    }
+}

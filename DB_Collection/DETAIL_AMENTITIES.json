@@ -1,0 +1,15 @@
+{
+    "title": "DETAIL_AMENTITIES",
+    "required": [
+        "DetailID",
+        "Amentities"
+    ],
+    "properties": {
+        "DetailID": {
+            "bsonType": "int"
+        },
+        "Amentities": {
+            "bsonType": "string"
+        }
+    }
+}

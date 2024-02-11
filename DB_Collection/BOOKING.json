@@ -1,0 +1,31 @@
+{
+    "title": "BOOKING",
+    "required": [
+        "BookingID",
+        "UserID",
+        "RoomID",
+        "CheckInDate",
+        "PayTepe",
+        "NumberOfBooking"
+    ],
+    "properties": {
+        "BookingID": {
+            "bsonType": "int"
+        },
+        "UserID": {
+            "bsonType": "int"
+        },
+        "RoomID": {
+            "bsonType": "int"
+        },
+        "CheckInDate": {
+            "bsonType": "date"
+        },
+        "PayTepe": {
+            "bsonType": "string"
+        },
+        "NumberOfBooking": {
+            "bsonType": "int"
+        }
+    }
+}

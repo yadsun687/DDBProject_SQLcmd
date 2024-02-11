@@ -1,0 +1,15 @@
+{
+    "title": "NORMAL_USER_ADDRESS",
+    "required": [
+        "UserID",
+        "UserAddress"
+    ],
+    "properties": {
+        "UserID": {
+            "bsonType": "int"
+        },
+        "UserAddress": {
+            "bsonType": "string"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "title": "NORMAL_USER",
+    "required": [
+        "UserID",
+        "BirthDate"
+    ],
+    "properties": {
+        "UserID": {
+            "bsonType": "int"
+        },
+        "BirthDate": {
+            "bsonType": "date"
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "title": "ROOM",
+    "required": [
+        "BranchID",
+        "RoomID",
+        "DetailID",
+        "Status",
+        "PriceNomal",
+        "PriceWeekend",
+        "PriceEvent"
+    ],
+    "properties": {
+        "BranchID": {
+            "bsonType": "int"
+        },
+        "RoomID": {
+            "bsonType": "int"
+        },
+        "DetailID": {
+            "bsonType": "int"
+        },
+        "Status": {
+            "bsonType": "bool"
+        },
+        "PriceNomal": {
+            "bsonType": "int"
+        },
+        "PriceWeekend": {
+            "bsonType": "int"
+        },
+        "PriceEvent": {
+            "bsonType": "int"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "title": "BRANCH_FACILITIES",
+    "required": [
+        "BranchID",
+        "Facility"
+    ],
+    "properties": {
+        "BranchID": {
+            "bsonType": "int"
+        },
+        "Facility": {
+            "bsonType": "string"
+        }
+    }
+}

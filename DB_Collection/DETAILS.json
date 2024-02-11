@@ -1,0 +1,72 @@
+{
+    "title": "DETAILS",
+    "required": [
+        "DetailID",
+        "RoomDecor",
+        "AccessibilityFeatures",
+        "bsonType",
+        "View",
+        "BuildingAndFloor",
+        "Bathroom",
+        "BedConfiguration",
+        "Services",
+        "RoomSize",
+        "WiFi",
+        "MaxPeople",
+        "Smoking"
+    ],
+    "properties": {
+        "DetailID": {
+            "bsonType": "int",
+            "description": "The unique identifier for the room details"
+        },
+        "RoomDecor": {
+            "bsonType": "string",
+            "description": "The decor of the room"
+        },
+        "AccessibilityFeatures": {
+            "bsonType": "string",
+            "description": "The accessibility features of the room"
+        },
+        "bsonType": {
+            "bsonType": "string",
+            "description": "bsonType of room"
+        },
+        "View": {
+            "bsonType": "string",
+            "description": "The view from the room"
+        },
+        "BuildingAndFloor": {
+            "bsonType": "string",
+            "description": "The building and floor of the room"
+        },
+        "Bathroom": {
+            "bsonType": "string",
+            "description": "The bathroom of the room"
+        },
+        "BedConfiguration": {
+            "bsonType": "string",
+            "description": "The bed configuration of the room"
+        },
+        "Services": {
+            "bsonType": "string",
+            "description": "The services provided in the room"
+        },
+        "RoomSize": {
+            "bsonType": "int",
+            "description": "The size of the room"
+        },
+        "WiFi": {
+            "bsonType": "bool",
+            "description": "The WiFi availability in the room"
+        },
+        "MaxPeople": {
+            "bsonType": "int",
+            "description": "The maximum number of people allowed in the room"
+        },
+        "Smoking": {
+            "bsonType": "bool",
+            "description": "The smoking policy of the room"
+        }
+    }
+}
