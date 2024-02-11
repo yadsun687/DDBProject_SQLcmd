@@ -876,9 +876,9 @@ ALTER TABLE public.branch_securitymeasures OWNER TO root;
 --
 
 CREATE TABLE public.branch_telephone (
+    branch_telephone_id integer NOT NULL,
     branchid integer NOT NULL,
-    branchtelephone character varying(100) NOT NULL,
-    branch_telephone_id integer NOT NULL
+    branchtelephone character varying(100) NOT NULL
 );
 
 
