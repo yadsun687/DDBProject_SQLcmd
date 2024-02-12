@@ -589,7 +589,7 @@ ALTER PROCEDURE public.user_edit_booking(IN p_user_email character varying, IN p
 -- Name: user_view_all_room(character varying, character varying); Type: FUNCTION; Schema: public; Owner: root
 --
 
-CREATE FUNCTION public.user_view_all_room(p_user_email character varying, p_user_password character varying) RETURNS TABLE(roomid integer, hotelname character varying, branchname character varying, locations character varying, roomdecor character varying, accessibilityfeatures character varying, roomtype character varying, roomview character varying, buildingfloor character varying, bathroom character varying, bedconfiguration character varying, services character varying, roomsize integer, wifi boolean, maxpeople integer, smoking boolean, facility character varying, measure character varying, transportation character varying, marketingstrategy character varying, technology character varying)
+CREATE FUNCTION public.user_view_all_room(p_user_email character varying, p_user_password character varying) RETURNS TABLE(hotelname character varying, branchlocation character varying, telephone text, roomid integer, branchname character varying, roomdecor character varying, accessibilityfeatures character varying, roomtype character varying, roomview character varying, buildingfloor character varying, bathroom character varying, bedconfiguration character varying, services character varying, roomsize integer, wifi boolean, maxpeople integer, smoking boolean, facility character varying, measure character varying, transportation character varying, marketingstrategy character varying, technology character varying)
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -633,10 +633,11 @@ BEGIN
     -- Retrieve the user's bookings along with related information
     RETURN QUERY
     SELECT
-        r.RoomID,
         h.HotelName,
+        hb.branch_location,
+      	STRING_AGG(tel.branchtelephone, ', ') OVER (PARTITION BY r.RoomID) AS telephone,
+        r.RoomID,
         hb.BranchName,
-        hb.Branch_Location AS Locations,
         d.RoomDecor,
         da.Amentities,
         d.RoomType,
@@ -655,17 +656,18 @@ BEGIN
         ms.Strategy AS MarketingStrategy,
         tech.Technology
     FROM public.ROOM r
-    JOIN public.DETAILS d ON r.DetailsID = d.DetailsID
-	JOIN public.Details_Amentities da ON d.DetailsID = da.DetailsID
-    JOIN public.HOTEL_BRANCH hb ON r.BranchID = hb.BranchID
-    JOIN public.HOTEL h ON hb.HotelID = h.HotelID
+    LEFT JOIN public.DETAILS d ON r.DetailsID = d.DetailsID
+	LEFT JOIN public.Details_Amentities da ON d.DetailsID = da.DetailsID
+    LEFT JOIN public.HOTEL_BRANCH hb ON r.BranchID = hb.BranchID
+    LEFT JOIN public.HOTEL h ON hb.HotelID = h.HotelID
     LEFT JOIN public.BRANCH_FACILITIES bf ON r.BranchID = bf.BranchID
     LEFT JOIN public.BRANCH_SECURITYMEASURES sm ON r.BranchID = sm.BranchID
     LEFT JOIN public.BRANCH_TRANSPORTATION tr ON r.BranchID = tr.BranchID
     LEFT JOIN public.BRANCH_TELEPHONE tel ON r.BranchID = tel.BranchID
     LEFT JOIN public.HOTEL_MARKETINGSTRATEGY ms ON hb.HotelID = ms.HotelID
     LEFT JOIN public.HOTEL_TECHNOLOGY tech ON hb.HotelID = tech.HotelID
-    WHERE r.Status = true;
+    WHERE r.Status = true
+	ORDER BY h.HotelName ASC, hb.BranchName ASC, r.RoomID ASC;
 END;
 $$;
 
@@ -1313,7 +1315,7 @@ INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (12, 1012, '0
 INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (13, 1013, '091-098-7654');
 INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (14, 1014, '090-987-6543');
 INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (15, 1015, '089-876-5432');
-INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (16, 1015, '999-153-9043');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (16, 1015, '999-876-5432');
 
 
 --

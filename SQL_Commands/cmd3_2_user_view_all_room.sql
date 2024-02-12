@@ -3,10 +3,11 @@ CREATE OR REPLACE FUNCTION user_view_all_room(
     p_user_password VARCHAR(100)
 )
 RETURNS TABLE (
-    RoomID INTEGER,
     HotelName VARCHAR(100),
+    BranchLocation VARCHAR(100),
+    Telephone TEXT,
+    RoomID INTEGER,
     BranchName VARCHAR(100),
-    Locations VARCHAR(100),
     RoomDecor VARCHAR(100),
     AccessibilityFeatures VARCHAR(100),
     RoomType VARCHAR(100),
@@ -68,10 +69,11 @@ BEGIN
     -- Retrieve the user's bookings along with related information
     RETURN QUERY
     SELECT
-        r.RoomID,
         h.HotelName,
+        hb.branch_location,
+      	STRING_AGG(tel.branchtelephone, ', ') OVER (PARTITION BY r.RoomID) AS telephone,
+        r.RoomID,
         hb.BranchName,
-        hb.Branch_Location AS Locations,
         d.RoomDecor,
         da.Amentities,
         d.RoomType,
@@ -90,18 +92,20 @@ BEGIN
         ms.Strategy AS MarketingStrategy,
         tech.Technology
     FROM public.ROOM r
-    JOIN public.DETAILS d ON r.DetailsID = d.DetailsID
-	JOIN public.Details_Amentities da ON d.DetailsID = da.DetailsID
-    JOIN public.HOTEL_BRANCH hb ON r.BranchID = hb.BranchID
-    JOIN public.HOTEL h ON hb.HotelID = h.HotelID
+    LEFT JOIN public.DETAILS d ON r.DetailsID = d.DetailsID
+	LEFT JOIN public.Details_Amentities da ON d.DetailsID = da.DetailsID
+    LEFT JOIN public.HOTEL_BRANCH hb ON r.BranchID = hb.BranchID
+    LEFT JOIN public.HOTEL h ON hb.HotelID = h.HotelID
     LEFT JOIN public.BRANCH_FACILITIES bf ON r.BranchID = bf.BranchID
     LEFT JOIN public.BRANCH_SECURITYMEASURES sm ON r.BranchID = sm.BranchID
     LEFT JOIN public.BRANCH_TRANSPORTATION tr ON r.BranchID = tr.BranchID
     LEFT JOIN public.BRANCH_TELEPHONE tel ON r.BranchID = tel.BranchID
     LEFT JOIN public.HOTEL_MARKETINGSTRATEGY ms ON hb.HotelID = ms.HotelID
     LEFT JOIN public.HOTEL_TECHNOLOGY tech ON hb.HotelID = tech.HotelID
-    WHERE r.Status = true;
+    WHERE r.Status = true
+	ORDER BY h.HotelName ASC, hb.BranchName ASC, r.RoomID ASC;
 END;
 $$;
 
+CALL login_user('john.doe@example.com', 'password123');
 SELECT * FROM user_view_all_room('john.doe@example.com', 'password123');
