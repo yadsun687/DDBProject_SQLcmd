@@ -99,13 +99,9 @@ BEGIN
     CALL public.register_all_user('user789', 'Eva Martinez', 'eva.martinez@example.com', ARRAY['NORMAL'], CURRENT_DATE, ARRAY['101 Pine St'], ARRAY['555-3456']);
     CALL public.login_user('eva.martinez@example.com', 'user789');
     
-    -- Insert hotel and branch with different information
-    PERFORM public.insert_hotel(4, 1, 'Ocean View Hotel', 'Ocean Brand');
-    PERFORM public.insert_hotel_branch(4, 1, 'Ocean Branch', 'Beachfront Location', 'Nautical Theme', 4, TRUE, 'Public Parking', 5);
-    
     -- Attempt to book an invalid room (room ID 999, assuming it doesn't exist)
     BEGIN
-        PERFORM public.insert_booking_with_user_and_room('eva.martinez@example.com', 'user789', 999, CURRENT_DATE + 2, 'Credit Card', 3);
+        CALL public.insert_booking_with_user_and_room('eva.martinez@example.com', 'user789', 9999999995433311, CURRENT_DATE + 2, 'Credit Card', 3);
     EXCEPTION
         WHEN OTHERS THEN
             RAISE NOTICE 'Test case 3: Cant booking with invalid room ID  - PASS';
@@ -129,21 +125,13 @@ BEGIN
     CALL public.login_user('ethan.johnson@example.com', 'user234');
     
     -- Insert hotel and branch with different information
-    PERFORM public.insert_hotel(5, 1, 'Mountain Lodge', 'Mountain Brand');
-    PERFORM public.insert_hotel_branch(5, 1, 'Mountain Branch', 'Scenic Location', 'Rustic Theme', 4, TRUE, 'Free Parking', 0);
-    
-    -- Retrieve the user ID
-    SELECT UserID INTO user_id FROM public.ALL_USER WHERE UserEmail = 'ethan.johnson@example.com';
-    
-    -- Retrieve a valid room ID (assuming room ID 4 exists and is available)
-    SELECT RoomID INTO room_id FROM public.ROOM WHERE RoomID = 4;
-    
-    -- Retrieve a valid hotel ID (assuming hotel ID 5 exists)
-    SELECT HotelID INTO hotel_id FROM public.HOTEL WHERE HotelID = 5;
+    PERFORM public.insert_hotel(535246, user_id, 'Mountain Lodge', 'Mountain Brand');
+    PERFORM public.insert_hotel_branch(535246, 741345, 'Mountain Branch', 'Scenic Location', 'Rustic Theme', 4, TRUE, 'Free Parking', 0);
+    PERFORM public.insert_room(741345, 61415, 1, TRUE, 100, 120, 150);
     
     -- Attempt to book the room at the specified hotel for 2 nights starting from the next day
     BEGIN
-        PERFORM public.insert_booking_with_user_and_room('ethan.johnson@example.com', 'user234', room_id, CURRENT_DATE + 1, 'Credit Card', 2);
+        CALL public.insert_booking_with_user_and_room('ethan.johnson@example.com', 'user234', 61415, CURRENT_DATE + 1, 'Credit Card', 2);
     EXCEPTION
         WHEN OTHERS THEN
             RAISE NOTICE 'Test case 4: Booking hotel up to 3 nights - FAILED';
@@ -155,7 +143,7 @@ BEGIN
 END;
 $$;
 
--- Test case 5: Booking with more than 3 nights
+-- Test case 5: Cant Booking with more than 3 nights
 DO $$
 DECLARE
     user_id INTEGER;
@@ -166,23 +154,21 @@ BEGIN
     CALL public.login_user('liam.martinez@example.com', 'user456');
     
     -- Insert hotel and branch with different information
-    PERFORM public.insert_hotel(7, 1, 'Seaside Resort', 'Seaside Brand');
-    PERFORM public.insert_hotel_branch(7, 1, 'Seaside Branch', 'Coastal Location', 'Tropical Theme', 4, TRUE, 'Beach Parking', 25);
-    
-    -- Retrieve a valid room ID (assuming room ID 6 exists and is available)
-    SELECT RoomID INTO room_id FROM public.ROOM WHERE RoomID = 6;
-    
+    PERFORM public.insert_hotel(731451, user_id, 'Seaside Resort', 'Seaside Brand');
+    PERFORM public.insert_hotel_branch(731451, 142145, 'Seaside Branch', 'Coastal Location', 'Tropical Theme', 4, TRUE, 'Beach Parking', 25);
+    PERFORM public.insert_room(142145, 54156, 1, TRUE, 100, 120, 150);
+        
     -- Attempt to book the room at the specified hotel for 4 nights starting from the next day
     BEGIN
-        PERFORM public.insert_booking_with_user_and_room('liam.martinez@example.com', 'user456', room_id, CURRENT_DATE + 1, 'Credit Card', 4);
+        CALL public.insert_booking_with_user_and_room('liam.martinez@example.com', 'user456', 54156, CURRENT_DATE + 1, 'Credit Card', 4);
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE NOTICE 'Test case 5: Booking with more than 3 nights - FAILED';
+            RAISE NOTICE 'Test case 5: Cant Booking with more than 3 nights - PASS';
             RETURN;
     END;
     
     -- Check if the booking failed due to more than 3 nights
-    RAISE NOTICE 'Test case 5: Booking with more than 3 nights - PASS';
+    RAISE NOTICE 'Test case 5: Cant Booking with more than 3 nights - FAILED';
 END;
 $$;
 
@@ -197,15 +183,13 @@ BEGIN
     CALL public.login_user('mia.wilson@example.com', 'user678');
     
     -- Insert hotel and branch with different information
-    PERFORM public.insert_hotel(11, 1, 'Lakeside Lodge', 'Lakeside Brand');
-    PERFORM public.insert_hotel_branch(11, 1, 'Lakeside Branch', 'Lakefront Location', 'Nature Theme', 4, TRUE, 'Lake Parking', 0);
-    
-    -- Retrieve a valid room ID (assuming room ID 9 exists and is available)
-    SELECT RoomID INTO room_id FROM public.ROOM WHERE RoomID = 9;
+    PERFORM public.insert_hotel(156264, user_id, 'Lakeside Lodge', 'Lakeside Brand');
+    PERFORM public.insert_hotel_branch(156264, 786548, 'Lakeside Branch', 'Lakefront Location', 'Nature Theme', 4, TRUE, 'Lake Parking', 0);
+    PERFORM public.insert_room(786548, 96521, 1, TRUE, 100, 120, 150);
     
     -- Attempt to book the room at the specified hotel for 2 nights starting from the next day
     BEGIN
-        PERFORM public.insert_booking_with_user_and_room('mia.wilson@example.com', 'user678', room_id, CURRENT_DATE + 1, 'Credit Card', 2);
+        CALL public.insert_booking_with_user_and_room('mia.wilson@example.com', 'user678', 96521, CURRENT_DATE + 1, 'Credit Card', 2);
     EXCEPTION
         WHEN OTHERS THEN
             RAISE NOTICE 'Test case 6: Cant Book Room That Already Booked - FAILED (First booking failed)';
@@ -214,7 +198,7 @@ BEGIN
     
     -- Attempt to book the same room again
     BEGIN
-        PERFORM public.insert_booking_with_user_and_room('mia.wilson@example.com', 'user678', room_id, CURRENT_DATE + 1, 'Credit Card', 2);
+        CALL public.insert_booking_with_user_and_room('mia.wilson@example.com', 'user678', 96521, CURRENT_DATE + 1, 'Credit Card', 2);
     EXCEPTION
         WHEN OTHERS THEN
             RAISE NOTICE 'Test case 6: Cant Book Room That Already Booked - PASS';
