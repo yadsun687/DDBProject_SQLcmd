@@ -9,11 +9,11 @@ GROUP BY HOTEL_MANAGER.UserID,ALL_USER.UserName
 ORDER BY ManagedBranches DESC;
 
 
--- top 10 hotels with an average rating of at least 4.5,
+-- top 5 hotels with an average rating of at least 4,
 -- categorizing them by revenue level based on booking amounts and counting the number of unique customers per hotel
 SELECT 
     "hotel"."hotelname", 
-    AVG("hotel_branch"."rating_reviews") AS "averagerating", 
+    ROUND(AVG("hotel_branch"."rating_reviews"), 2) AS "averagerating", 
     SUM("room"."pricenormal" * "booking"."numberofbooking") AS "totalrevenue",
     COUNT(DISTINCT "booking"."userid") AS "uniquecustomers",
     CASE 
@@ -32,8 +32,7 @@ JOIN
 GROUP BY 
     "hotel"."hotelname"
 HAVING 
-    AVG("hotel_branch"."rating_reviews") >= 4.5 
+    AVG("hotel_branch"."rating_reviews") >= 4
 ORDER BY 
     "averagerating" DESC, "totalrevenue" DESC
-LIMIT 10;
-
+LIMIT 5;
