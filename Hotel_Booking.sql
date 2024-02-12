@@ -1197,6 +1197,31 @@ INSERT INTO public.all_user VALUES (1, 'password123', 'John Doe', 'john.doe@exam
 INSERT INTO public.all_user VALUES (2, 'password1234', 'John Doe', 'com');
 INSERT INTO public.all_user VALUES (3, 'password123', 'JohnDoe', '@example.com');
 INSERT INTO public.all_user VALUES (4, 'passw1221ord123', 'JohnDoe2', 'jo132hn.doe@example.com');
+INSERT INTO public.all_user VALUES (1001, 'password1', 'User 1', 'user1@example.com');
+INSERT INTO public.all_user VALUES (1002, 'password2', 'User 2', 'user2@example.com');
+INSERT INTO public.all_user VALUES (1003, 'password3', 'User 3', 'user3@example.com');
+INSERT INTO public.all_user VALUES (1004, 'password4', 'User 4', 'user4@example.com');
+INSERT INTO public.all_user VALUES (1005, 'password5', 'User 5', 'user5@example.com');
+INSERT INTO public.all_user VALUES (1006, 'password6', 'User 6', 'user6@example.com');
+INSERT INTO public.all_user VALUES (1007, 'password7', 'User 7', 'user7@example.com');
+INSERT INTO public.all_user VALUES (1008, 'password8', 'User 8', 'user8@example.com');
+INSERT INTO public.all_user VALUES (1009, 'password9', 'User 9', 'user9@example.com');
+INSERT INTO public.all_user VALUES (1010, 'password10', 'User 10', 'user10@example.com');
+INSERT INTO public.all_user VALUES (1011, 'password11', 'User 11', 'user11@example.com');
+INSERT INTO public.all_user VALUES (1012, 'password12', 'User 12', 'user12@example.com');
+INSERT INTO public.all_user VALUES (1013, 'password13', 'User 13', 'user13@example.com');
+INSERT INTO public.all_user VALUES (1014, 'password14', 'User 14', 'user14@example.com');
+INSERT INTO public.all_user VALUES (1015, 'password15', 'User 15', 'user15@example.com');
+INSERT INTO public.all_user VALUES (1016, 'password16', 'User 16', 'user16@example.com');
+INSERT INTO public.all_user VALUES (1017, 'password17', 'User 17', 'user17@example.com');
+INSERT INTO public.all_user VALUES (1018, 'password18', 'User 18', 'user18@example.com');
+INSERT INTO public.all_user VALUES (1019, 'password19', 'User 19', 'user19@example.com');
+INSERT INTO public.all_user VALUES (1020, 'password20', 'User 20', 'user20@example.com');
+INSERT INTO public.all_user VALUES (1021, 'password21', 'User 21', 'user21@example.com');
+INSERT INTO public.all_user VALUES (1022, 'password22', 'User 22', 'user22@example.com');
+INSERT INTO public.all_user VALUES (1023, 'password23', 'User 23', 'user23@example.com');
+INSERT INTO public.all_user VALUES (1024, 'password24', 'User 24', 'user24@example.com');
+INSERT INTO public.all_user VALUES (1025, 'password25', 'User 25', 'user25@example.com');
 
 
 --
@@ -1204,6 +1229,56 @@ INSERT INTO public.all_user VALUES (4, 'passw1221ord123', 'JohnDoe2', 'jo132hn.d
 --
 
 INSERT INTO public.booking VALUES (2, 1, 1, '3024-03-10', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1001, 1001, 1001, '2024-02-01', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1002, 1002, 1002, '2024-02-02', 'Cash', 2);
+INSERT INTO public.booking VALUES (1003, 1003, 1003, '2024-02-03', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1004, 1004, 1004, '2024-02-04', 'Credit Card', 3);
+INSERT INTO public.booking VALUES (1005, 1005, 1005, '2024-02-05', 'Cash', 2);
+INSERT INTO public.booking VALUES (1006, 1006, 1006, '2024-02-06', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1007, 1007, 1007, '2024-02-07', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1008, 1008, 1008, '2024-02-08', 'Cash', 1);
+INSERT INTO public.booking VALUES (1009, 1009, 1009, '2024-02-09', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1010, 1010, 1010, '2024-02-10', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1011, 1011, 1011, '2024-02-11', 'Cash', 3);
+INSERT INTO public.booking VALUES (1012, 1012, 1012, '2024-02-12', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1013, 1013, 1013, '2024-02-13', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1014, 1014, 1014, '2024-02-14', 'Cash', 2);
+INSERT INTO public.booking VALUES (1015, 1015, 1015, '2024-02-15', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1016, 1016, 1016, '2024-02-16', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1017, 1017, 1017, '2024-02-17', 'Cash', 1);
+INSERT INTO public.booking VALUES (1018, 1018, 1018, '2024-02-18', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1019, 1019, 1019, '2024-02-19', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1020, 1020, 1020, '2024-02-20', 'Cash', 2);
+INSERT INTO public.booking VALUES (1021, 1021, 1021, '2024-02-21', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1022, 1022, 1022, '2024-02-22', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1023, 1023, 1023, '2024-02-23', 'Cash', 1);
+INSERT INTO public.booking VALUES (1024, 1001, 1001, '2024-02-24', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1025, 1002, 1002, '2024-02-25', 'Cash', 2);
+INSERT INTO public.booking VALUES (1026, 1003, 1003, '2024-02-26', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1027, 1004, 1004, '2024-02-27', 'Credit Card', 3);
+INSERT INTO public.booking VALUES (1028, 1005, 1005, '2024-02-28', 'Cash', 2);
+INSERT INTO public.booking VALUES (1029, 1006, 1006, '2024-02-29', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1030, 1007, 1007, '2024-03-01', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1031, 1008, 1008, '2024-03-02', 'Cash', 1);
+INSERT INTO public.booking VALUES (1032, 1009, 1009, '2024-03-03', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1033, 1010, 1010, '2024-03-04', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1034, 1011, 1011, '2024-03-05', 'Cash', 3);
+INSERT INTO public.booking VALUES (1035, 1012, 1012, '2024-03-06', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1036, 1013, 1013, '2024-03-07', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1037, 1014, 1014, '2024-03-08', 'Cash', 2);
+INSERT INTO public.booking VALUES (1038, 1015, 1015, '2024-03-09', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1039, 1016, 1016, '2024-03-10', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1040, 1017, 1017, '2024-03-11', 'Cash', 1);
+INSERT INTO public.booking VALUES (1041, 1018, 1018, '2024-03-12', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1042, 1019, 1019, '2024-03-13', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1043, 1020, 1020, '2024-03-14', 'Cash', 2);
+INSERT INTO public.booking VALUES (1044, 1021, 1021, '2024-03-15', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1045, 1022, 1022, '2024-03-16', 'Credit Card', 2);
+INSERT INTO public.booking VALUES (1046, 1023, 1023, '2024-03-17', 'Cash', 1);
+INSERT INTO public.booking VALUES (1047, 1001, 1001, '2024-03-18', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1048, 1002, 1002, '2024-03-19', 'Cash', 2);
+INSERT INTO public.booking VALUES (1049, 1003, 1003, '2024-03-20', 'Credit Card', 1);
+INSERT INTO public.booking VALUES (1050, 1004, 1004, '2024-03-21', 'Credit Card', 3);
 
 
 --
@@ -1235,13 +1310,38 @@ INSERT INTO public.booking VALUES (2, 1, 1, '3024-03-10', 'Credit Card', 2);
 --
 
 INSERT INTO public.details VALUES (1, 'Modern', 'Wheelchair Accessible', 'Standard', 'City View', '5th Floor', 'Private', 'Double Bed', 'Cleaning Service', 30, true, 2, false);
+INSERT INTO public.details VALUES (1001, 'Modern', 'Wheelchair Accessible', 'Standard', 'City View', '5th Floor', 'Private', 'Double Bed', 'Room Service', 300, true, 2, false);
+INSERT INTO public.details VALUES (1002, 'Classic', 'Elevator Access', 'Standard', 'Ocean View', '2nd Floor', 'Private', 'Twin Beds', 'Concierge', 350, true, 2, true);
+INSERT INTO public.details VALUES (1003, 'Vintage', 'Ramp Access', 'Standard', 'Mountain View', '3rd Floor', 'Shared', 'Queen Bed', 'Housekeeping', 280, true, 2, false);
+INSERT INTO public.details VALUES (1004, 'Contemporary', 'Staircase Access', 'Suite', 'Lake View', '4th Floor', 'Private', 'King Bed', 'Laundry', 400, true, 4, true);
+INSERT INTO public.details VALUES (1005, 'Rustic', 'No Accessibility Features', 'Suite', 'Garden View', '1st Floor', 'Private', 'Bunk Beds', 'Valet Parking', 320, true, 4, false);
+INSERT INTO public.details VALUES (1006, 'Minimalist', 'Wheelchair Accessible', 'Standard', 'City View', '6th Floor', 'Private', 'Double Bed', 'Room Service', 280, true, 2, false);
+INSERT INTO public.details VALUES (1007, 'Elegant', 'Elevator Access', 'Standard', 'Ocean View', '3rd Floor', 'Private', 'Twin Beds', 'Concierge', 330, true, 2, true);
+INSERT INTO public.details VALUES (1008, 'Classic', 'Ramp Access', 'Standard', 'Mountain View', '4th Floor', 'Shared', 'Queen Bed', 'Housekeeping', 270, true, 2, false);
+INSERT INTO public.details VALUES (1009, 'Modern', 'Staircase Access', 'Suite', 'Lake View', '5th Floor', 'Private', 'King Bed', 'Laundry', 390, true, 4, true);
+INSERT INTO public.details VALUES (1010, 'Contemporary', 'No Accessibility Features', 'Suite', 'Garden View', '2nd Floor', 'Private', 'Bunk Beds', 'Valet Parking', 310, true, 4, false);
+INSERT INTO public.details VALUES (1011, 'Urban', 'Elevator Access', 'Standard', 'City View', '8th Floor', 'Shared', 'Double Bed', 'Room Service', 350, true, 2, false);
+INSERT INTO public.details VALUES (1012, 'Vintage', 'Wheelchair Accessible', 'Standard', 'Mountain View', '7th Floor', 'Private', 'Twin Beds', 'Concierge', 330, true, 2, true);
+INSERT INTO public.details VALUES (1013, 'Minimalist', 'Elevator Access', 'Standard', 'Ocean View', '9th Floor', 'Private', 'Queen Bed', 'Housekeeping', 370, true, 2, false);
+INSERT INTO public.details VALUES (1014, 'Classic', 'Ramp Access', 'Suite', 'Lake View', '3rd Floor', 'Private', 'King Bed', 'Laundry', 420, true, 4, true);
+INSERT INTO public.details VALUES (1015, 'Modern', 'No Accessibility Features', 'Suite', 'Garden View', '2nd Floor', 'Private', 'Bunk Beds', 'Valet Parking', 340, true, 4, false);
+INSERT INTO public.details VALUES (1016, 'Modern', 'Wheelchair Accessible', 'Standard', 'City View', '6th Floor', 'Private', 'Double Bed', 'Room Service', 300, true, 2, false);
+INSERT INTO public.details VALUES (1017, 'Elegant', 'Elevator Access', 'Standard', 'Ocean View', '3rd Floor', 'Private', 'Twin Beds', 'Concierge', 330, true, 2, true);
+INSERT INTO public.details VALUES (1018, 'Classic', 'Ramp Access', 'Standard', 'Mountain View', '4th Floor', 'Shared', 'Queen Bed', 'Housekeeping', 270, true, 2, false);
+INSERT INTO public.details VALUES (1019, 'Modern', 'Staircase Access', 'Suite', 'Lake View', '5th Floor', 'Private', 'King Bed', 'Laundry', 390, true, 4, true);
+INSERT INTO public.details VALUES (1020, 'Contemporary', 'No Accessibility Features', 'Suite', 'Garden View', '2nd Floor', 'Private', 'Bunk Beds', 'Valet Parking', 310, true, 4, false);
+INSERT INTO public.details VALUES (1021, 'Contemporary', 'Staircase Access', 'Standard', 'City View', '6th Floor', 'Private', 'Double Bed', 'Room Service', 280, true, 2, false);
+INSERT INTO public.details VALUES (1022, 'Vintage', 'Ramp Access', 'Standard', 'Mountain View', '4th Floor', 'Shared', 'Queen Bed', 'Housekeeping', 270, true, 2, false);
+INSERT INTO public.details VALUES (1023, 'Modern', 'Wheelchair Accessible', 'Standard', 'City View', '5th Floor', 'Private', 'Double Bed', 'Room Service', 300, true, 2, false);
+INSERT INTO public.details VALUES (1024, 'Classic', 'No Accessibility Features', 'Suite', 'Garden View', '1st Floor', 'Private', 'Bunk Beds', 'Valet Parking', 320, true, 4, false);
+INSERT INTO public.details VALUES (1025, 'Elegant', 'Elevator Access', 'Standard', 'Ocean View', '3rd Floor', 'Private', 'Twin Beds', 'Concierge', 330, true, 2, true);
 
 
 --
 -- Data for Name: details_amentities; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.details_amentities OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, 'Free Wi-Fi');
+INSERT INTO public.details_amentities OVERRIDING SYSTEM VALUE VALUES (0, 1, 'Free Wi-Fi');
 
 
 --
@@ -1249,6 +1349,21 @@ INSERT INTO public.details_amentities OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1
 --
 
 INSERT INTO public.hotel VALUES (1, 1, 'Sample Hotel', 'Sample Brand');
+INSERT INTO public.hotel VALUES (1001, 1001, 'Grand Plaza Hotel', 'Grand Hotels Group');
+INSERT INTO public.hotel VALUES (1002, 1002, 'Ocean View Resort', 'Ocean Resorts Inc.');
+INSERT INTO public.hotel VALUES (1003, 1003, 'Sunset Paradise Inn', 'Sunset Hospitality Ltd.');
+INSERT INTO public.hotel VALUES (1004, 1004, 'Mountain Lodge Retreat', 'Mountain Resorts & Spas');
+INSERT INTO public.hotel VALUES (1005, 1005, 'Golden Sands Resort', 'Golden Resorts International');
+INSERT INTO public.hotel VALUES (1006, 1001, 'City Tower Hotel', 'Urban Hospitality Group');
+INSERT INTO public.hotel VALUES (1007, 1002, 'Royal Gardens Hotel', 'Royal Hospitality Management');
+INSERT INTO public.hotel VALUES (1008, 1003, 'Lakeview Lodge', 'Lakefront Resorts Inc.');
+INSERT INTO public.hotel VALUES (1009, 1004, 'Alpine Chalet Retreat', 'Alpine Hospitality Group');
+INSERT INTO public.hotel VALUES (1010, 1005, 'Coastal Haven Resort', 'Coastal Resorts Ltd.');
+INSERT INTO public.hotel VALUES (1011, 1001, 'Valley View Resort', 'Valley Resorts International');
+INSERT INTO public.hotel VALUES (1012, 1002, 'Tropical Oasis Inn', 'Tropical Resorts Inc.');
+INSERT INTO public.hotel VALUES (1013, 1003, 'Urban Heights Hotel', 'Urban Resorts Group');
+INSERT INTO public.hotel VALUES (1014, 1004, 'Serenity Springs Resort', 'Serenity Hospitality Ltd.');
+INSERT INTO public.hotel VALUES (1015, 1005, 'Skyline Plaza Hotel', 'Skyline Hospitality Group');
 
 
 --
@@ -1256,6 +1371,37 @@ INSERT INTO public.hotel VALUES (1, 1, 'Sample Hotel', 'Sample Brand');
 --
 
 INSERT INTO public.hotel_branch VALUES (1, 1, 'Main Branch', 'City Center', 'Modern', 4, true, 'Valet Parking', 10);
+INSERT INTO public.hotel_branch VALUES (1001, 1001, 'Grand Plaza - Downtown', 'City Center', 'Luxury Modern', 5, true, 'Valet', 20);
+INSERT INTO public.hotel_branch VALUES (1001, 1002, 'Grand Plaza - Beachfront', 'Beachside', 'Tropical Paradise', 4, true, 'Covered', 15);
+INSERT INTO public.hotel_branch VALUES (1001, 1003, 'Grand Plaza - Mountain View', 'Mountain Resort', 'Alpine Chic', 5, true, 'Open', 10);
+INSERT INTO public.hotel_branch VALUES (1002, 1004, 'Ocean View - Coastal Retreat', 'Coastal Area', 'Coastal Elegance', 4, true, 'Covered', 18);
+INSERT INTO public.hotel_branch VALUES (1002, 1005, 'Ocean View - Island Escape', 'Island Resort', 'Island Paradise', 5, true, 'Valet', 25);
+INSERT INTO public.hotel_branch VALUES (1003, 1006, 'Sunset Paradise - Lakeside', 'Lakefront', 'Rustic Charm', 4, true, 'Open', 12);
+INSERT INTO public.hotel_branch VALUES (1003, 1007, 'Sunset Paradise - Riverside', 'Riverside', 'Riverside Retreat', 4, true, 'Covered', 14);
+INSERT INTO public.hotel_branch VALUES (1004, 1008, 'Mountain Lodge - Woodland', 'Woodland Area', 'Log Cabin Style', 5, true, 'Open', 15);
+INSERT INTO public.hotel_branch VALUES (1004, 1009, 'Mountain Lodge - Hillside', 'Hillside Resort', 'Ski Chalet', 4, true, 'Covered', 18);
+INSERT INTO public.hotel_branch VALUES (1005, 1010, 'Golden Sands - Coastal Haven', 'Coastal Area', 'Coastal Luxury', 4, true, 'Valet', 22);
+INSERT INTO public.hotel_branch VALUES (1005, 1011, 'Golden Sands - Desert Oasis', 'Desert Resort', 'Desert Retreat', 4, true, 'Covered', 20);
+INSERT INTO public.hotel_branch VALUES (1006, 1012, 'City Tower - Business District', 'Financial District', 'Contemporary Elegance', 4, true, 'Covered', 20);
+INSERT INTO public.hotel_branch VALUES (1006, 1013, 'City Tower - Skyline View', 'Skyline Area', 'Modern Chic', 5, true, 'Valet', 25);
+INSERT INTO public.hotel_branch VALUES (1007, 1014, 'Royal Gardens - Parkside', 'Park Area', 'Royal Garden Oasis', 5, true, 'Valet', 30);
+INSERT INTO public.hotel_branch VALUES (1007, 1015, 'Royal Gardens - Riverfront', 'Riverfront', 'Elegant Riverside', 5, true, 'Covered', 25);
+INSERT INTO public.hotel_branch VALUES (1008, 1016, 'Lakeview Lodge - Lakeside', 'Lakeside Area', 'Lakeview Retreat', 3, true, 'Open', 15);
+INSERT INTO public.hotel_branch VALUES (1008, 1017, 'Lakeview Lodge - Forest Retreat', 'Forest Area', 'Tranquil Forest Hideaway', 4, true, 'Covered', 18);
+INSERT INTO public.hotel_branch VALUES (1009, 1018, 'Alpine Chalet - Mountain View', 'Mountain Resort', 'Alpine Escape', 5, true, 'Open', 20);
+INSERT INTO public.hotel_branch VALUES (1009, 1019, 'Alpine Chalet - Lakefront', 'Lakefront Area', 'Lakeside Chalet', 5, true, 'Covered', 22);
+INSERT INTO public.hotel_branch VALUES (1010, 1020, 'Coastal Haven - Seaside Retreat', 'Seaside Area', 'Coastal Seclusion', 4, true, 'Covered', 20);
+INSERT INTO public.hotel_branch VALUES (1010, 1021, 'Coastal Haven - Bayview', 'Bayfront Area', 'Bayview Escape', 5, true, 'Valet', 25);
+INSERT INTO public.hotel_branch VALUES (1011, 1022, 'Valley View - Hilltop Retreat', 'Hilltop Area', 'Panoramic Valley View', 5, true, 'Open', 30);
+INSERT INTO public.hotel_branch VALUES (1011, 1023, 'Valley View - Countryside', 'Countryside', 'Rural Serenity', 3, true, 'Covered', 35);
+INSERT INTO public.hotel_branch VALUES (1012, 1024, 'Tropical Oasis - Beachfront', 'Beachfront', 'Tropical Beach Hideaway', 4, true, 'Covered', 20);
+INSERT INTO public.hotel_branch VALUES (1012, 1025, 'Tropical Oasis - Jungle Retreat', 'Jungle Area', 'Jungle Paradise', 5, true, 'Open', 22);
+INSERT INTO public.hotel_branch VALUES (1013, 1026, 'Urban Heights - Downtown', 'City Center', 'Urban Luxury', 4, true, 'Valet', 25);
+INSERT INTO public.hotel_branch VALUES (1013, 1027, 'Urban Heights - Arts District', 'Arts District', 'Artistic Retreat', 5, true, 'Covered', 28);
+INSERT INTO public.hotel_branch VALUES (1014, 1028, 'Serenity Springs - Lakeside', 'Lakefront Area', 'Tranquil Lakeside Sanctuary', 4, true, 'Covered', 20);
+INSERT INTO public.hotel_branch VALUES (1014, 1029, 'Serenity Springs - Countryside', 'Countryside', 'Rural Escape', 3, true, 'Open', 22);
+INSERT INTO public.hotel_branch VALUES (1015, 1030, 'Skyline Plaza - Downtown', 'City Center', 'Skyline Luxury', 5, true, 'Valet', 30);
+INSERT INTO public.hotel_branch VALUES (1015, 1031, 'Skyline Plaza - Riverfront', 'Riverfront', 'Riverfront Retreat', 5, true, 'Covered', 35);
 
 
 --
@@ -1263,6 +1409,30 @@ INSERT INTO public.hotel_branch VALUES (1, 1, 'Main Branch', 'City Center', 'Mod
 --
 
 INSERT INTO public.hotel_manager VALUES (1);
+INSERT INTO public.hotel_manager VALUES (1001);
+INSERT INTO public.hotel_manager VALUES (1002);
+INSERT INTO public.hotel_manager VALUES (1003);
+INSERT INTO public.hotel_manager VALUES (1004);
+INSERT INTO public.hotel_manager VALUES (1005);
+INSERT INTO public.hotel_manager VALUES (1006);
+INSERT INTO public.hotel_manager VALUES (1007);
+INSERT INTO public.hotel_manager VALUES (1008);
+INSERT INTO public.hotel_manager VALUES (1009);
+INSERT INTO public.hotel_manager VALUES (1011);
+INSERT INTO public.hotel_manager VALUES (1012);
+INSERT INTO public.hotel_manager VALUES (1013);
+INSERT INTO public.hotel_manager VALUES (1014);
+INSERT INTO public.hotel_manager VALUES (1015);
+INSERT INTO public.hotel_manager VALUES (1016);
+INSERT INTO public.hotel_manager VALUES (1017);
+INSERT INTO public.hotel_manager VALUES (1018);
+INSERT INTO public.hotel_manager VALUES (1019);
+INSERT INTO public.hotel_manager VALUES (1020);
+INSERT INTO public.hotel_manager VALUES (1021);
+INSERT INTO public.hotel_manager VALUES (1022);
+INSERT INTO public.hotel_manager VALUES (1023);
+INSERT INTO public.hotel_manager VALUES (1024);
+INSERT INTO public.hotel_manager VALUES (1025);
 
 
 --
@@ -1293,30 +1463,55 @@ INSERT INTO public.normal_user VALUES (1, '1990-01-01');
 INSERT INTO public.normal_user VALUES (2, '2024-02-05');
 INSERT INTO public.normal_user VALUES (3, '1990-01-01');
 INSERT INTO public.normal_user VALUES (4, '2024-02-06');
+INSERT INTO public.normal_user VALUES (1001, '1990-01-01');
+INSERT INTO public.normal_user VALUES (1002, '1991-02-02');
+INSERT INTO public.normal_user VALUES (1003, '1992-03-03');
+INSERT INTO public.normal_user VALUES (1004, '1993-04-04');
+INSERT INTO public.normal_user VALUES (1005, '1994-05-05');
+INSERT INTO public.normal_user VALUES (1006, '1995-06-06');
+INSERT INTO public.normal_user VALUES (1007, '1996-07-07');
+INSERT INTO public.normal_user VALUES (1008, '1997-08-08');
+INSERT INTO public.normal_user VALUES (1009, '1998-09-09');
+INSERT INTO public.normal_user VALUES (1010, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1011, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1012, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1013, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1014, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1015, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1016, '1999-10-10');
+INSERT INTO public.normal_user VALUES (1017, '2000-01-01');
+INSERT INTO public.normal_user VALUES (1018, '2001-02-02');
+INSERT INTO public.normal_user VALUES (1019, '2002-03-03');
+INSERT INTO public.normal_user VALUES (1020, '2003-04-04');
+INSERT INTO public.normal_user VALUES (1021, '2004-05-05');
+INSERT INTO public.normal_user VALUES (1022, '2005-06-06');
+INSERT INTO public.normal_user VALUES (1023, '2006-07-07');
+INSERT INTO public.normal_user VALUES (1024, '2007-08-08');
+INSERT INTO public.normal_user VALUES (1025, '2008-09-09');
 
 
 --
 -- Data for Name: normaluser_address; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '123 Main St');
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '456 Oak St');
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '123 Main St');
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '456 Oak St');
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '123 Main St');
-INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '456 Oak Ave');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (0, 1, '123 Main St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (1, 1, '456 Oak St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (2, 3, '123 Main St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (3, 3, '456 Oak St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (4, 4, '123 Main St');
+INSERT INTO public.normaluser_address OVERRIDING SYSTEM VALUE VALUES (5, 4, '456 Oak Ave');
 
 
 --
 -- Data for Name: normaluser_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '555-1234');
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 1, '555-5678');
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '555-1234');
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 3, '555-5678');
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '555-1234');
-INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT, 4, '555-5678');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (0, 1, '555-1234');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (1, 1, '555-5678');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (2, 3, '555-1234');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (3, 3, '555-5678');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (4, 4, '555-1234');
+INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (5, 4, '555-5678');
 
 
 --
@@ -1324,6 +1519,29 @@ INSERT INTO public.normaluser_telephone OVERRIDING SYSTEM VALUE VALUES (DEFAULT,
 --
 
 INSERT INTO public.room VALUES (1, 1, 1, true, 100, 120, 150);
+INSERT INTO public.room VALUES (1001, 1001, 1001, true, 150, 200, 250);
+INSERT INTO public.room VALUES (1001, 1002, 1002, true, 170, 220, 270);
+INSERT INTO public.room VALUES (1001, 1003, 1003, true, 160, 210, 260);
+INSERT INTO public.room VALUES (1002, 1004, 1004, true, 180, 230, 280);
+INSERT INTO public.room VALUES (1002, 1005, 1005, true, 140, 190, 240);
+INSERT INTO public.room VALUES (1003, 1006, 1006, true, 130, 180, 230);
+INSERT INTO public.room VALUES (1003, 1007, 1007, true, 120, 170, 220);
+INSERT INTO public.room VALUES (1004, 1008, 1008, true, 190, 240, 290);
+INSERT INTO public.room VALUES (1004, 1009, 1009, true, 200, 250, 300);
+INSERT INTO public.room VALUES (1006, 1010, 1010, true, 110, 160, 210);
+INSERT INTO public.room VALUES (1006, 1011, 1011, true, 100, 150, 200);
+INSERT INTO public.room VALUES (1008, 1012, 1012, true, 220, 270, 320);
+INSERT INTO public.room VALUES (1008, 1013, 1013, true, 210, 260, 310);
+INSERT INTO public.room VALUES (1010, 1014, 1014, true, 230, 280, 330);
+INSERT INTO public.room VALUES (1010, 1015, 1015, true, 240, 290, 340);
+INSERT INTO public.room VALUES (1012, 1016, 1016, true, 200, 250, 300);
+INSERT INTO public.room VALUES (1012, 1017, 1017, true, 210, 260, 310);
+INSERT INTO public.room VALUES (1013, 1018, 1018, true, 180, 230, 280);
+INSERT INTO public.room VALUES (1013, 1019, 1019, true, 190, 240, 290);
+INSERT INTO public.room VALUES (1014, 1020, 1020, true, 220, 270, 320);
+INSERT INTO public.room VALUES (1014, 1021, 1021, true, 230, 280, 330);
+INSERT INTO public.room VALUES (1015, 1022, 1022, true, 250, 300, 350);
+INSERT INTO public.room VALUES (1015, 1023, 1023, true, 260, 310, 360);
 
 
 --
