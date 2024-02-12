@@ -185,11 +185,11 @@ BEGIN
     JOIN 
         public.details d ON r.detailsid = d.detailsid
     JOIN 
-        public.details_amentities da ON d.detailsid = da.detailsid
-    JOIN 
         public.hotel_branch hb ON r.branchid = hb.branchid
     JOIN 
         public.hotel h ON hb.hotelid = h.hotelid
+    LEFT JOIN 
+        public.details_amentities da ON d.detailsid = da.detailsid
     LEFT JOIN 
         public.branch_facilities bf ON r.branchid = bf.branchid
     LEFT JOIN 
@@ -224,6 +224,11 @@ BEGIN
     FROM public.ALL_USER
     WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
+    END IF;
+
     -- Get the last login and logout IDs for the user
     SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
     FROM public.LOGS
@@ -236,11 +241,6 @@ BEGIN
     -- Check if the user is currently logged in
     IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
         RAISE EXCEPTION 'User is not currently logged in.';
-    END IF;
-
-    -- Check if the user is found
-    IF v_user_id IS NULL THEN
-        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
 
     -- Check if the user is a normal user
