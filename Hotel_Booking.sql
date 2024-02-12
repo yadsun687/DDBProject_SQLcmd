@@ -1463,6 +1463,14 @@ ALTER TABLE ONLY public.hotel_branch
 
 
 --
+-- Name: branch_facilities branch_facilities_branch_facility_id_branchid_branch_facili_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_facilities
+    ADD CONSTRAINT branch_facilities_branch_facility_id_branchid_branch_facili_key UNIQUE (branch_facility_id, branchid) INCLUDE (branch_facility_id, branchid);
+
+
+--
 -- Name: branch_facilities branch_facilities_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1479,6 +1487,22 @@ ALTER TABLE ONLY public.branch_securitymeasures
 
 
 --
+-- Name: branch_securitymeasures branch_securitymeasures_branch_measure_id_branchid_branch_m_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_securitymeasures
+    ADD CONSTRAINT branch_securitymeasures_branch_measure_id_branchid_branch_m_key UNIQUE (branch_measure_id, branchid) INCLUDE (branch_measure_id, branchid);
+
+
+--
+-- Name: branch_telephone branch_telephone_branchid_branch_telephone_id_branchid1_bra_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_telephone
+    ADD CONSTRAINT branch_telephone_branchid_branch_telephone_id_branchid1_bra_key UNIQUE (branchid, branch_telephone_id) INCLUDE (branchid, branch_telephone_id);
+
+
+--
 -- Name: branch_telephone branch_telephone_pk; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1487,11 +1511,27 @@ ALTER TABLE ONLY public.branch_telephone
 
 
 --
+-- Name: branch_transportation branch_transportation_branch_transportation_id_branchid_bra_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.branch_transportation
+    ADD CONSTRAINT branch_transportation_branch_transportation_id_branchid_bra_key UNIQUE (branch_transportation_id, branchid) INCLUDE (branch_transportation_id, branchid);
+
+
+--
 -- Name: branch_transportation branch_transportation_pk; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
 ALTER TABLE ONLY public.branch_transportation
     ADD CONSTRAINT branch_transportation_pk PRIMARY KEY (branch_transportation_id) INCLUDE (branch_transportation_id);
+
+
+--
+-- Name: details_amentities details_amentities_details_amentities_id_detailsid_details__key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.details_amentities
+    ADD CONSTRAINT details_amentities_details_amentities_id_detailsid_details__key UNIQUE (details_amentities_id, detailsid) INCLUDE (details_amentities_id, detailsid);
 
 
 --
@@ -1519,6 +1559,14 @@ ALTER TABLE ONLY public.hotel_manager
 
 
 --
+-- Name: hotel_marketingstrategy hotel_marketingstrategy_hotel_strategy_id_hotelid_hotel_str_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel_marketingstrategy
+    ADD CONSTRAINT hotel_marketingstrategy_hotel_strategy_id_hotelid_hotel_str_key UNIQUE (hotel_strategy_id, hotelid) INCLUDE (hotel_strategy_id, hotelid);
+
+
+--
 -- Name: hotel_marketingstrategy hotel_marketingstrategy_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1532,6 +1580,14 @@ ALTER TABLE ONLY public.hotel_marketingstrategy
 
 ALTER TABLE ONLY public.hotel
     ADD CONSTRAINT hotel_pkey PRIMARY KEY (hotelid);
+
+
+--
+-- Name: hotel_technology hotel_technology_hotel_technology_id_hotelid_hotel_technolo_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.hotel_technology
+    ADD CONSTRAINT hotel_technology_hotel_technology_id_hotelid_hotel_technolo_key UNIQUE (hotel_technology_id, hotelid) INCLUDE (hotel_technology_id, hotelid);
 
 
 --
@@ -1559,6 +1615,14 @@ ALTER TABLE ONLY public.normal_user
 
 
 --
+-- Name: normaluser_address normaluser_address_normaluser_address_id_userid_normaluser__key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.normaluser_address
+    ADD CONSTRAINT normaluser_address_normaluser_address_id_userid_normaluser__key UNIQUE (normaluser_address_id, userid) INCLUDE (normaluser_address_id, userid);
+
+
+--
 -- Name: normaluser_address normaluser_address_pkey; Type: CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -1572,6 +1636,14 @@ ALTER TABLE ONLY public.normaluser_address
 
 ALTER TABLE ONLY public.normaluser_telephone
     ADD CONSTRAINT normaluser_telephone_pkey PRIMARY KEY (normaluser_telephone_id) INCLUDE (normaluser_telephone_id);
+
+
+--
+-- Name: normaluser_telephone normaluser_telephone_userid_normaluser_telephone_id_normalu_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.normaluser_telephone
+    ADD CONSTRAINT normaluser_telephone_userid_normaluser_telephone_id_normalu_key UNIQUE (userid, normaluser_telephone_id) INCLUDE (normaluser_telephone_id, userid);
 
 
 --
