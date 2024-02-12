@@ -59,4 +59,12 @@ BEGIN
 END;
 $$;
 
+
+--login user first to grant permission in viewing data
+CALL login_user('john.doe@example.com', 'password123');
+
+--function call
 CALL public.user_delete_booking('john.doe@example.com', 'password123', 1);
+
+--show result
+SELECT * FROM booking ORDER BY bookingid ASC;

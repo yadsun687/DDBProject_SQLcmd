@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.admins_view_all_bookings(
+CREATE OR REPLACE FUNCTION admins_view_all_bookings(
     p_user_email VARCHAR(100),
     p_user_password VARCHAR(100)
 )
@@ -103,11 +103,11 @@ BEGIN
     JOIN 
         public.details d ON r.detailsid = d.detailsid
     JOIN 
-        public.details_amentities da ON d.detailsid = da.detailsid
-    JOIN 
         public.hotel_branch hb ON r.branchid = hb.branchid
     JOIN 
         public.hotel h ON hb.hotelid = h.hotelid
+    LEFT JOIN 
+        public.details_amentities da ON d.detailsid = da.detailsid
     LEFT JOIN 
         public.branch_facilities bf ON r.branchid = bf.branchid
     LEFT JOIN 
@@ -120,3 +120,6 @@ BEGIN
         public.hotel_technology tech ON hb.hotelid = tech.hotelid;
 END;
 $$;
+
+--show result
+SELECT * FROM public.admins_view_all_bookings('john.doe@example.com' , 'password123') ORDER BY bookingid ASC;

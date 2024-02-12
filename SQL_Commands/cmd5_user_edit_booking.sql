@@ -83,4 +83,12 @@ BEGIN
     WHERE BookingID = p_booking_id;
 END;
 $$;
-CALL public.user_edit_booking('john.doe@example.com', 'password123', 1, '2024-03-10', 'Credit Card', 2);
+
+--login user first to grant permission in viewing data
+CALL login_user('john.doe@example.com', 'password123');
+
+--function call
+CALL public.user_edit_booking('john.doe@example.com', 'password123', 2, '3024-03-10', 'Cash', 2);
+
+--show result
+SELECT * FROM booking ORDER BY bookingid ASC;

@@ -140,4 +140,8 @@ BEGIN
 END;
 $$;
 
+--login user first to grant permission in viewing data
+CALL login_user('john.doe@example.com', 'password123');
+
+--show result
 SELECT * FROM user_view_his_booking('john.doe@example.com', 'password123');
