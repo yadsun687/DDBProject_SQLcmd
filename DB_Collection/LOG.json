@@ -1,0 +1,28 @@
+{
+    "title": "LOGIN_LOG",
+    "description": "This collection stores login and logout information for users.",
+    "required": [
+        "LogID",
+        "Login",
+        "Logout",
+        "UserID"
+    ],
+    "properties": {
+        "LogID": {
+            "bsonType": "int",
+            "description": "The unique identifier for each log entry."
+        },
+        "Login": {
+            "bsonType": "date",
+            "description": "The timestamp when the user logged in."
+        },
+        "Logout": {
+            "bsonType": "date",
+            "description": "The timestamp when the user logged out."
+        },
+        "UserID": {
+            "bsonType": "int",
+            "description": "The unique identifier for each user."
+        }
+    }
+}

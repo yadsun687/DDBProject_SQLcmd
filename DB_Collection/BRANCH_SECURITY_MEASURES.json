@@ -1,15 +1,23 @@
 {
     "title": "BRANCH_SECURITY_MEASURES",
     "required": [
+        "Branch_measure_id",
         "BranchID",
         "Measure"
     ],
     "properties": {
+        "Branch_measure_id": {
+            "bsonType": "int",
+            "description": "The unique identifier for the branch security measure.",
+            "unique": true
+        },
         "BranchID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The identifier for the branch associated with the security measure."
         },
         "Measure": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The security measure implemented for the branch."
         }
     }
 }

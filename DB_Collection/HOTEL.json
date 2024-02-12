@@ -8,16 +8,21 @@
     ],
     "properties": {
         "HotelID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the hotel.",
+            "unique": true
         },
         "UserID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the user associated with the hotel."
         },
         "HotelName": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The name of the hotel."
         },
         "BrandIdentity": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The brand identity of the hotel."
         }
     }
 }

@@ -1,15 +1,23 @@
 {
     "title": "BRANCH_FACILITIES",
     "required": [
+        "Branch_facility_id",
         "BranchID",
         "Facility"
     ],
     "properties": {
+        "Branch_facility_id": {
+            "bsonType": "int",
+            "description": "The unique identifier for a branch facility.",
+            "uniqueItems": true
+        },
         "BranchID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The identifier for the branch associated with the facility."
         },
         "Facility": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The name of the facility."
         }
     }
 }

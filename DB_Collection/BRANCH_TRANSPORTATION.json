@@ -1,15 +1,23 @@
 {
     "title": "BRANCH_TRANSPORTATION",
     "required": [
+        "Branch_transportation_id",
         "BranchID",
         "Transportation"
     ],
     "properties": {
+        "Branch_transportation_id": {
+            "bsonType": "int",
+            "description": "The ID of the branch transportation",
+            "unique": true
+        },
         "BranchID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the branch"
         },
         "Transportation": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The transportation method used by the branch"
         }
     }
 }

@@ -5,27 +5,35 @@
         "UserID",
         "RoomID",
         "CheckInDate",
-        "PayTepe",
+        "PayType",
         "NumberOfBooking"
     ],
     "properties": {
         "BookingID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for each booking",
+            "unique": true
         },
         "UserID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for each user"
         },
         "RoomID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for each room"
         },
         "CheckInDate": {
-            "bsonType": "date"
+            "bsonType": "date",
+            "description": "The date when the booking is made"
         },
-        "PayTepe": {
-            "bsonType": "string"
+        "PayType": {
+            "bsonType": "string",
+            "description": "The payment type for the booking"
         },
         "NumberOfBooking": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The number night of bookings made by the user",
+            "maximum": 3
         }
     }
 }

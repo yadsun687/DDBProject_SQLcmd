@@ -11,25 +11,34 @@
     ],
     "properties": {
         "BranchID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the branch where the room is located.",
+            "unique": true
         },
         "RoomID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the room.",
+            "unique": true
         },
         "DetailID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the room detail."
         },
         "Status": {
-            "bsonType": "bool"
+            "bsonType": "bool",
+            "description": "The status of the room (true for available, false for unavailable)."
         },
         "PriceNomal": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The normal price of the room."
         },
         "PriceWeekend": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The price of the room during weekends."
         },
         "PriceEvent": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The price of the room during special events."
         }
     }
 }

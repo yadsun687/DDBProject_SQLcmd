@@ -4,25 +4,26 @@
         "UserID",
         "UserPassword",
         "UserName",
-        "UserEmail",
-        "RecentLoginDate"
+        "UserEmail"
     ],
     "properties": {
         "UserID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The unique identifier for the user.",
+            "unique" : true
         },
         "UserPassword": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The password for the user."
         },
         "UserName": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The name of the user."
         },
         "UserEmail": {
             "bsonType": "string",
-            "pattern": "^.+@.+$"
-        },
-        "RecentLoginDate": {
-            "bsonType": "date"
+            "pattern": "^.+@.+$",
+            "description": "The email address of the user."
         }
     }
 }

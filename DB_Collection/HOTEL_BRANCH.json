@@ -6,38 +6,49 @@
         "BranchName",
         "Location",
         "DecorAndTheme",
-        "RatingAndReview",
+        "Rating/Review",
         "ParkingAvailability",
         "ParkingTypeParking",
         "ParkingCostParking"
     ],
     "properties": {
         "HotelID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the hotel.",
+            "unique": true
         },
         "BranchID": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The ID of the branch.",
+            "unique": true
         },
         "BranchName": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The name of the branch."
         },
         "Location": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The location of the branch."
         },
         "DecorAndTheme": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The decor and theme of the branch."
         },
-        "RatingAndReview": {
-            "bsonType": "int"
+        "Rating/Review": {
+            "bsonType": "int",
+            "description": "The rating or review of the branch."
         },
         "ParkingAvailability": {
-            "bsonType": "bool"
+            "bsonType": "bool",
+            "description": "The availability of parking at the branch."
         },
         "ParkingTypeParking": {
-            "bsonType": "string"
+            "bsonType": "string",
+            "description": "The type of parking available at the branch."
         },
         "ParkingCostParking": {
-            "bsonType": "int"
+            "bsonType": "int",
+            "description": "The cost of parking at the branch."
         }
     }
 }
