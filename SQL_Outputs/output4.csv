@@ -1,2 +1,2 @@
-"bookingid","userid","roomid","checkindate","paytype","numberofbooking"
-1,1,1,"2024-03-10","Credit Card",2
+"bookingid","userid","checkindate","paytype","numberofbooking","roomid","hotelid","hotelname","branchid","branchname","branchlocation","decorandtheme","ratingreviews","parkingavailability","parkingtypeparking","parkingcostparking","roomdecor","accessibilityfeatures","roomtype","roomview","buildingfloor","bathroom","bedconfiguration","services","roomsize","wifi","maxpeople","smoking","facility","measure","transportation","marketingstrategy","technology"
+2,1,"3024-03-10","Credit Card",2,1,1,"Sample Hotel",1,"Main Branch","City Center","Modern",4,True,"Valet Parking",10,"Modern","Free Wi-Fi","Standard","City View","5th Floor","Private","Double Bed","Cleaning Service",30,True,2,False,NULL,NULL,NULL,NULL,NULL
