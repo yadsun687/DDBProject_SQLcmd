@@ -19,6 +19,11 @@ BEGIN
     FROM public.ALL_USER
     WHERE UserEmail = p_user_email AND UserPassword = p_user_password;
 
+    -- Check if the user is found
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found with the given credentials';
+    END IF;
+
     -- Get the last login and logout IDs for the user
     SELECT MAX(CASE WHEN logout IS NULL THEN logid END) INTO last_login_id
     FROM public.LOGS
@@ -31,11 +36,6 @@ BEGIN
     -- Check if the user is currently logged in
     IF last_login_id IS NULL OR (last_logout_id IS NOT NULL AND last_logout_id > last_login_id) THEN
         RAISE EXCEPTION 'User is not currently logged in.';
-    END IF;
-
-    -- Check if the user is found
-    IF v_user_id IS NULL THEN
-        RAISE EXCEPTION 'User not found with the given credentials';
     END IF;
 
     -- Check if the user is a normal user
@@ -81,3 +81,6 @@ $$;
 
 
 CALL public.insert_booking_with_user_and_room('john.doe@example.com', 'password123', 1, '2124-03-01', 'Credit Card', 2);
+
+-- Show Result
+SELECT * FROM booking

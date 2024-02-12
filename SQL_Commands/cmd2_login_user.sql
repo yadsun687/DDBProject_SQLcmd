@@ -61,3 +61,6 @@ CALL login_user('john.doe@example.com', 'password123');
 
 -- Test logout_user procedure
 CALL logout_user('john.doe@example.com', 'password123');
+
+-- Show Result
+SELECT * FROM public.logs ORDER BY logid ASC 

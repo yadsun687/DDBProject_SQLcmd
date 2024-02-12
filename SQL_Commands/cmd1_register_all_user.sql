@@ -83,4 +83,7 @@ BEGIN
 END;
 $$;
 
-CALL register_all_user('passw1221ord123', 'JohnDoe2', 'jo132hn.doe@example.com', ARRAY['NORMAL', 'ADMIN'], CURRENT_DATE, ARRAY['123 Main St', '456 Oak Ave'], ARRAY['555-1234', '555-5678']);
+CALL register_all_user('NewUserPassword', 'NewUser', 'newuser@example.com', ARRAY['NORMAL', 'ADMIN'], CURRENT_DATE, ARRAY['123 Main St', '456 Oak Ave'], ARRAY['555-1234', '555-5678']);
+
+-- Show Result
+SELECT * FROM public.all_user ORDER BY userid ASC 
