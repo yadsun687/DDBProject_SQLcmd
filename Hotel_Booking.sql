@@ -1297,6 +1297,23 @@ INSERT INTO public.booking VALUES (1050, 1004, 1004, '2024-03-21', 'Credit Card'
 -- Data for Name: branch_telephone; Type: TABLE DATA; Schema: public; Owner: root
 --
 
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (0, 1, '098-234-5234');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (1, 1001, '088-234-2435');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (2, 1002, '012-345-6789');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (3, 1003, '011-234-5678');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (4, 1004, '010-987-6543');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (5, 1005, '099-876-5432');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (6, 1006, '098-765-4321');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (7, 1007, '097-654-3210');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (8, 1008, '096-543-2109');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (9, 1009, '095-432-1098');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (10, 1010, '094-321-0987');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (11, 1011, '093-210-9876');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (12, 1012, '092-109-8765');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (13, 1013, '091-098-7654');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (14, 1014, '090-987-6543');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (15, 1015, '089-876-5432');
+INSERT INTO public.branch_telephone OVERRIDING SYSTEM VALUE VALUES (16, 1015, '999-153-9043');
 
 
 --
@@ -1562,7 +1579,7 @@ SELECT pg_catalog.setval('public.branch_securitymeasures_branch_securitymeasure_
 -- Name: branch_telephone_branch_telephone_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.branch_telephone_branch_telephone_id_seq', 0, false);
+SELECT pg_catalog.setval('public.branch_telephone_branch_telephone_id_seq', 1016, true);
 
 
 --
