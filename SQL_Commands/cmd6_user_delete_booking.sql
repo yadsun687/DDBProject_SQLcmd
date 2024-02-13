@@ -64,7 +64,7 @@ $$;
 CALL login_user('john.doe@example.com', 'password123');
 
 --function call
-CALL public.user_delete_booking('john.doe@example.com', 'password123', 1);
+CALL public.user_delete_booking('john.doe@example.com', 'password123', 2);
 
 --show result
 SELECT * FROM booking ORDER BY bookingid ASC;
