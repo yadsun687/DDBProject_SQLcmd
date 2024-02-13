@@ -252,6 +252,19 @@ BEGIN
         RAISE EXCEPTION 'User found, but not a normal user';
     END IF;
 
+    -- Check if the room is already booked with the same userID and same number of date_bin
+    IF EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE RoomID = p_room_id
+          AND UserID = v_user_id
+          AND CheckInDate = p_checkin_date
+          AND NumberOfBooking = p_number_of_booking
+    ) THEN
+        RAISE NOTICE 'You are already booked this room with the same number of date';
+        RETURN;
+    END IF;
+
     -- Check if the room is available
     IF NOT EXISTS (
         SELECT 1
@@ -380,7 +393,14 @@ BEGIN
         WHERE UserEmail = p_user_email
            AND UserPassword = p_user_password
     ) THEN
-        RAISE EXCEPTION 'User with the same email and password already exists.';
+        RAISE NOTICE 'User with the same email and password already exists. So no new user is registered.';
+        RETURN;
+    ELSEIF EXISTS (
+        SELECT 1
+        FROM ALL_USER
+        WHERE UserEmail = p_user_email
+    ) THEN
+        RAISE EXCEPTION 'User with the same email already exists';
     END IF;
 
     -- Generate a new UserID
