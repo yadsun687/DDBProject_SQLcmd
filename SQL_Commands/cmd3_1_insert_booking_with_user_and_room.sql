@@ -47,6 +47,19 @@ BEGIN
         RAISE EXCEPTION 'User found, but not a normal user';
     END IF;
 
+    -- Check if the room is already booked with the same userID and same number of date_bin
+    IF EXISTS (
+        SELECT 1
+        FROM public.BOOKING
+        WHERE RoomID = p_room_id
+          AND UserID = v_user_id
+          AND CheckInDate = p_checkin_date
+          AND NumberOfBooking = p_number_of_booking
+    ) THEN
+        RAISE NOTICE 'You are already booked this room with the same number of date';
+        RETURN;
+    END IF;
+
     -- Check if the room is available
     IF NOT EXISTS (
         SELECT 1
@@ -80,6 +93,7 @@ END;
 $$;
 
 
+CALL login_user('john.doe@example.com', 'password123');
 CALL public.insert_booking_with_user_and_room('john.doe@example.com', 'password123', 1, '2124-03-01', 'Credit Card', 2);
 
 -- Show Result

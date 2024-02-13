@@ -21,7 +21,14 @@ BEGIN
         WHERE UserEmail = p_user_email
            AND UserPassword = p_user_password
     ) THEN
-        RAISE EXCEPTION 'User with the same email and password already exists.';
+        RAISE NOTICE 'User with the same email and password already exists. So no new user is registered.';
+        RETURN;
+    ELSEIF EXISTS (
+        SELECT 1
+        FROM ALL_USER
+        WHERE UserEmail = p_user_email
+    ) THEN
+        RAISE EXCEPTION 'User with the same email already exists';
     END IF;
 
     -- Generate a new UserID
